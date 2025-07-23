@@ -1,5 +1,5 @@
 import { Button, Card, Form, Input, Typography } from "antd";
-import { LockOutlined, UserOutlined } from "@ant-design/icons";
+import { LockOutlined, MailOutlined } from "@ant-design/icons";
 
 const { Title } = Typography;
 
@@ -19,10 +19,10 @@ const LoginForm = () => (
       layout="vertical"
     >
       <Form.Item
-        name="username"
-        rules={[{ required: true, message: "Please input your username!" }]}
+        name="email"
+        rules={[{ required: true, message: "Please input your email!" }]}
       >
-        <Input prefix={<UserOutlined />} placeholder="Username" size="large" />
+        <Input prefix={<MailOutlined />} placeholder="Email" size="large" />
       </Form.Item>
 
       <Form.Item
