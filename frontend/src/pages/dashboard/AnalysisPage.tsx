@@ -1,9 +1,10 @@
 import DashboardLayout from "../../components/DashboardLayout";
+import AnalysisDashboard from "../../features/dashboard/components/AnalysisDashboard";
 
 const AnalysisPage = () => {
   return (
     <DashboardLayout>
-      <h1>Welcome to the Analysis Page!</h1>
+      <AnalysisDashboard />
     </DashboardLayout>
   );
 };

@@ -81,20 +81,14 @@ const DashboardLayout = ({ children }: Props) => {
 
   const sidebarItems: MenuProps["items"] = [
     {
-      key: "home",
+      key: "/",
       icon: <HomeOutlined />,
       label: "Home",
-      children: [
-        {
-          key: "/",
-          label: "Dashboard",
-        },
-        {
-          key: "/about",
-          icon: <InfoCircleOutlined />,
-          label: "About",
-        },
-      ],
+    },
+    {
+      key: "/about",
+      icon: <InfoCircleOutlined />,
+      label: "About",
     },
     {
       key: "/analysis",
