@@ -4,6 +4,7 @@ import LoadingPage from "../../components/LoadingPage";
 import HomePage from "../../pages/dashboard/HomePage";
 import AboutPage from "../../pages/dashboard/AboutPage";
 import AnalysisPage from "../../pages/dashboard/AnalysisPage";
+import LoginPage from "../../pages/auth/LoginPage";
 
 export const AppRoutes = () => {
   return (
@@ -11,8 +12,8 @@ export const AppRoutes = () => {
       <Suspense fallback={<LoadingPage />}>
         <Routes>
           {/* <Route element={<RequireUnauth />}> */}
-          {/* <Route path="/register" element={<RegisterPage />} />
-          <Route path="/login" element={<LoginPage />} /> */}
+          {/* <Route path="/register" element={<RegisterPage />} /> */}
+          <Route path="/login" element={<LoginPage />} />
           {/* </Route> */}
 
           {/* <Route element={<RequireAuth />}> */}
