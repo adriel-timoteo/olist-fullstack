@@ -1,17 +1,9 @@
 package main
 
-import (
-	"net/http"
-
-	"github.com/gin-gonic/gin"
-)
+import "github.com/adriel-timoteo/olist-fullstack/backend/app"
 
 func main() {
-	r := gin.Default()
+	a := app.App{}
 
-	r.GET("/ping", func(c *gin.Context) {
-		c.JSON(http.StatusOK, gin.H{"message": "pong"})
-	})
-
-	r.Run(":8080")
+	a.Run()
 }
