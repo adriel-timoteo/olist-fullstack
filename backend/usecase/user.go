@@ -1,101 +1,99 @@
-package repository
+package usecase
 
 import (
 	"context"
-	"database/sql"
-	"errors"
+	"fmt"
 
 	"github.com/adriel-timoteo/olist-fullstack/backend/ce"
 	"github.com/adriel-timoteo/olist-fullstack/backend/entity"
+	"github.com/adriel-timoteo/olist-fullstack/backend/repository"
+	"github.com/adriel-timoteo/olist-fullstack/backend/util"
 )
 
-type UserRepoItf interface {
-	CheckIsEmailExist(context.Context, entity.ReqRegisterUser) (bool, error)
+type UserUsecaseItf interface {
 	RegisterUser(context.Context, entity.ReqRegisterUser) (*entity.User, error)
-	GetUserByEmail(context.Context, entity.ReqLoginUser) (*entity.User, error)
+	LoginUser(context.Context, entity.ReqLoginUser) (*entity.Token, error)
 }
 
-type UserRepoImpl struct {
+type UserUsecaseImpl struct {
+	ur  repository.UserRepoItf
+	trx repository.Transactor
 }
 
-func NewUserRepo() UserRepoImpl {
-	return UserRepoImpl{}
-}
-
-func (ur UserRepoImpl) CheckIsEmailExist(ctx context.Context, req entity.ReqRegisterUser) (bool, error) {
-	tx, ok := ctx.Value(txCtxKey{}).(*sql.Tx)
-	if !ok {
-		return false, ce.NewError(ce.DatabaseError, "internal server error")
+func NewUserUsecaseImpl(ur repository.UserRepoItf, trx repository.Transactor) UserUsecaseImpl {
+	return UserUsecaseImpl{
+		ur:  ur,
+		trx: trx,
 	}
+}
 
-	q := `
-		select 
-			id 
-		from 
-			users
-		where 
-			email = $1`
-
-	err := tx.QueryRowContext(ctx, q, req.Email).Scan(new(string))
-	if err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
-			return false, nil
+func (uuc UserUsecaseImpl) RegisterUser(ctx context.Context, req entity.ReqRegisterUser) (*entity.User, error) {
+	data, err := uuc.trx.WithinTransaction(ctx, func(ctx context.Context) (any, error) {
+		exist, err := uuc.ur.CheckIsEmailExist(ctx, req)
+		if err != nil {
+			return nil, err
+		}
+		if exist {
+			return nil, ce.NewError(ce.AlreadyExist, "email already used")
 		}
 
-		return false, ce.NewError(ce.DatabaseError, "internal server error")
+		hashPwd, err := util.HashPassword(req.Password)
+		if err != nil {
+			return nil, ce.NewError(ce.CommonErr, "error occured")
+		}
+
+		req.Password = hashPwd
+
+		res, err := uuc.ur.RegisterUser(ctx, req)
+		if err != nil {
+			return nil, err
+		}
+
+		return res, nil
+	})
+	if err != nil {
+		return nil, err
 	}
 
-	return true, nil
+	user, ok := data.(*entity.User)
+	if !ok {
+		return nil, ce.NewError(ce.CommonErr, "error occured")
+	}
+
+	return user, nil
 }
 
-func (ur UserRepoImpl) RegisterUser(ctx context.Context, req entity.ReqRegisterUser) (*entity.User, error) {
-	tx, ok := ctx.Value(txCtxKey{}).(*sql.Tx)
-	if !ok {
-		return nil, ce.NewError(ce.DatabaseError, "internal server error")
-	}
+func (uuc UserUsecaseImpl) LoginUser(ctx context.Context, req entity.ReqLoginUser) (*entity.Token, error) {
+	data, err := uuc.trx.WithinTransaction(ctx, func(ctx context.Context) (any, error) {
+		fmt.Println("getting user")
+		user, err := uuc.ur.GetUserByEmail(ctx, req)
+		if err != nil {
+			return nil, err
+		}
 
-	var user entity.User
-
-	q := `
-		insert into 
-			users (email, password, role_id, created_at, updated_at) 
-		values 
-			($1, $2, $3, NOW(), NOW())
-		returning 
-			id, email, role_id`
-
-	err := tx.QueryRowContext(ctx, q, req.Email, req.Password, req.RoleId).Scan(&user.Id, &user.Email, &user.RoleId)
-
-	if err != nil {
-		return nil, ce.NewError(ce.DatabaseError, "error register user")
-	}
-
-	return &user, nil
-}
-
-func (ur UserRepoImpl) GetUserByEmail(ctx context.Context, req entity.ReqLoginUser) (*entity.User, error) {
-	tx, ok := ctx.Value(txCtxKey{}).(*sql.Tx)
-	if !ok {
-		return nil, ce.NewError(ce.DatabaseError, "internal server error")
-	}
-
-	var user entity.User
-
-	q := `
-		select 
-			id, email, password, role_id
-		from 
-			users
-		where 
-			email = $1`
-
-	err := tx.QueryRowContext(ctx, q, req.Email).Scan(&user.Id, &user.Email, &user.Password, &user.RoleId)
-	if err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
+		fmt.Println("comparing hash")
+		ok := util.CompareHashPassword(req.Password, user.Password)
+		if !ok {
 			return nil, ce.NewError(ce.InvalidAction, "invalid credentials")
 		}
-		return nil, ce.NewError(ce.DatabaseError, "internal server error")
+
+		fmt.Println("generating token")
+		tokenRes, err := util.GenerateJWTToken(user.Id)
+		if err != nil {
+			return nil, ce.NewError(ce.CommonErr, "error occured")
+		}
+
+		return tokenRes, nil
+	})
+	if err != nil {
+		return nil, err
 	}
 
-	return &user, nil
+	fmt.Println("token")
+	token, ok := data.(string)
+	if !ok {
+		return nil, ce.NewError(ce.CommonErr, "error occured")
+	}
+
+	return &entity.Token{Token: token}, nil
 }

@@ -58,7 +58,7 @@ func (ur UserRepoImpl) RegisterUser(ctx context.Context, req entity.ReqRegisterU
 
 	q := `
 		INSERT INTO 
-			users (email, password, created_at, updated_at) 
+			users (email, password_hash, created_at, updated_at) 
 		VALUES 
 			($1, $2, NOW(), NOW())
 		RETURNING 
@@ -82,11 +82,11 @@ func (ur UserRepoImpl) GetUserByEmail(ctx context.Context, req entity.ReqLoginUs
 	var user entity.User
 
 	q := `
-		select 
-			id, email, password
-		from 
+		SELECT 
+			id, email, password_hash
+		FROM 
 			users
-		where 
+		WHERE 
 			email = $1`
 
 	err := tx.QueryRowContext(ctx, q, req.Email).Scan(&user.Id, &user.Email, &user.Password)

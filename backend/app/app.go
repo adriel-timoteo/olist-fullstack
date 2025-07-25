@@ -1,12 +1,6 @@
 package app
 
 import (
-	"backend/constant"
-	"backend/db"
-	"backend/handler"
-	"backend/middleware"
-	"backend/repository"
-	"backend/usecase"
 	"context"
 	"database/sql"
 	"log"
@@ -15,6 +9,13 @@ import (
 	"os/signal"
 	"syscall"
 	"time"
+
+	"github.com/adriel-timoteo/olist-fullstack/backend/constant"
+	"github.com/adriel-timoteo/olist-fullstack/backend/db"
+	"github.com/adriel-timoteo/olist-fullstack/backend/handler"
+	"github.com/adriel-timoteo/olist-fullstack/backend/middleware"
+	"github.com/adriel-timoteo/olist-fullstack/backend/repository"
+	"github.com/adriel-timoteo/olist-fullstack/backend/usecase"
 
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
@@ -51,13 +52,13 @@ func (a *App) initRoutes() {
 	uuc := usecase.NewUserUsecaseImpl(ur, trx)
 	uh := handler.NewUserHandler(uuc)
 
-	pr := repository.NewPatientRepo()
-	puc := usecase.NewPatientUsecaseImpl(pr, trx)
-	ph := handler.NewPatientHandler(puc)
+	// pr := repository.NewPatientRepo()
+	// puc := usecase.NewPatientUsecaseImpl(pr, trx)
+	// ph := handler.NewPatientHandler(puc)
 
-	mr := repository.NewMedicineRepo()
-	muc := usecase.NewMedicineUsecaseImpl(mr, trx)
-	mh := handler.NewMedicineHandler(muc)
+	// mr := repository.NewMedicineRepo()
+	// muc := usecase.NewMedicineUsecaseImpl(mr, trx)
+	// mh := handler.NewMedicineHandler(muc)
 
 	a.Router.GET("/ping", func(ctx *gin.Context) {
 		ctx.JSON(http.StatusOK, gin.H{
@@ -69,19 +70,19 @@ func (a *App) initRoutes() {
 	{
 		v1.POST("/register", uh.RegisterUser)
 		v1.POST("/login", uh.LoginUser)
-		patients := v1.Group("/patients", middleware.Authenticate())
-		{
-			patients.POST("", ph.AddPatient)
-			patients.GET("", ph.GetAllPatients)
-			patients.GET("/:id", ph.GetPatientById)
-			patients.PATCH("/:id", ph.UpdatePatients)
-			patients.DELETE("/:id", ph.DeletePatient)
-			patients.PATCH("/:id/restore", ph.RestoreDeletedPatient)
-		}
-		medicines := v1.Group("/medicines", middleware.Authenticate())
-		{
-			medicines.POST("", mh.AddMedicine)
-		}
+		// patients := v1.Group("/patients", middleware.Authenticate())
+		// {
+		// 	patients.POST("", ph.AddPatient)
+		// 	patients.GET("", ph.GetAllPatients)
+		// 	patients.GET("/:id", ph.GetPatientById)
+		// 	patients.PATCH("/:id", ph.UpdatePatients)
+		// 	patients.DELETE("/:id", ph.DeletePatient)
+		// 	patients.PATCH("/:id/restore", ph.RestoreDeletedPatient)
+		// }
+		// medicines := v1.Group("/medicines", middleware.Authenticate())
+		// {
+		// 	medicines.POST("", mh.AddMedicine)
+		// }
 	}
 
 }
@@ -108,7 +109,7 @@ func (a *App) Run() {
 	<-quit
 	log.Println("Shutdown server ...")
 
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
 	defer cancel()
 	if err := srv.Shutdown(ctx); err != nil {
 		log.Println("Server shutdown: ", err)
