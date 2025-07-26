@@ -12,6 +12,7 @@ import (
 
 type ProductUsecaseItf interface {
 	GetDeliveredTrend(context.Context, time.Time, time.Time, constant.Interval) ([]entity.DeliveredProductTrend, error)
+	GetProductStatusTrend(context.Context, time.Time, time.Time) ([]entity.ProductStatusTrend, error)
 }
 
 type ProductUsecaseImpl struct {
@@ -28,7 +29,7 @@ func NewProductUsecaseImpl(pr repository.ProductRepoItf, trx repository.Transact
 
 func (puc ProductUsecaseImpl) GetDeliveredTrend(ctx context.Context, start, end time.Time, interval constant.Interval) ([]entity.DeliveredProductTrend, error) {
 	data, err := puc.trx.WithinTransaction(ctx, func(ctx context.Context) (any, error) {
-		return puc.pr.GroupDeliveredByTime(ctx, start, end, interval)
+		return puc.pr.SelectDeliveredProductsTrend(ctx, start, end, interval)
 	})
 	if err != nil {
 		return nil, err
@@ -40,4 +41,20 @@ func (puc ProductUsecaseImpl) GetDeliveredTrend(ctx context.Context, start, end 
 	}
 
 	return trends, nil
+}
+
+func (puc ProductUsecaseImpl) GetProductStatusTrend(ctx context.Context, start, end time.Time) ([]entity.ProductStatusTrend, error) {
+	data, err := puc.trx.WithinTransaction(ctx, func(ctx context.Context) (any, error) {
+		return puc.pr.SelectProductStatusTrend(ctx, start, end)
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	statuses, ok := data.([]entity.ProductStatusTrend)
+	if !ok {
+		return nil, ce.NewError(ce.CommonErr, "error occurred")
+	}
+
+	return statuses, nil
 }

@@ -1,6 +1,12 @@
 package dto
 
 type DeliveredTrend struct {
-	DeliveryTime        string `json:"delivery_time"`
-	TotalDeliveredCount int    `json:"total_delivered_products"`
+	Time  string `json:"time"`
+	Count int    `json:"count"`
+}
+
+type ProductStatusSnapshot struct {
+	Time   string `json:"time"`
+	Status string `json:"status"`
+	Count  int    `json:"count"`
 }

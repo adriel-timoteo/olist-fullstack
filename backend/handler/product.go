@@ -51,7 +51,7 @@ func (ph ProductHandler) GetDeliveredTrend(ctx *gin.Context) {
 		return
 	}
 
-	// Call the usecase
+	// Call usecase
 	trends, err := ph.puc.GetDeliveredTrend(ctx, start, end, interval)
 	if err != nil {
 		ctx.Error(err)
@@ -62,8 +62,8 @@ func (ph ProductHandler) GetDeliveredTrend(ctx *gin.Context) {
 	var trendsDto []dto.DeliveredTrend
 	for _, t := range trends {
 		trendsDto = append(trendsDto, dto.DeliveredTrend{
-			DeliveryTime:        t.DeliveryTime.Format("2006-01-02"),
-			TotalDeliveredCount: t.TotalDeliveredCount,
+			Time:  t.DeliveryTime.Format(constant.DateFormat),
+			Count: t.TotalDeliveredCount,
 		})
 	}
 
@@ -72,5 +72,49 @@ func (ph ProductHandler) GetDeliveredTrend(ctx *gin.Context) {
 		Message: "successfully retrieved daily delivered products",
 		Error:   nil,
 		Data:    trendsDto,
+	})
+}
+
+func (ph ProductHandler) GetProductStatusSnapshot(ctx *gin.Context) {
+	startParam := ctx.DefaultQuery("start", time.Now().Format(constant.DateFormat))
+	endParam := ctx.DefaultQuery("end", time.Now().Format(constant.DateFormat))
+
+	// Parse start date
+	start, err := time.Parse(constant.DateFormat, startParam)
+	if err != nil {
+		ctx.Error(ce.NewError(ce.InvalidAction, "start date not valid"))
+		return
+	}
+
+	// Parse end date
+	end, err := time.Parse(constant.DateFormat, endParam)
+	if err != nil {
+		ctx.Error(ce.NewError(ce.InvalidAction, "end date not valid"))
+		return
+	}
+
+	// Call usecase
+	statuses, err := ph.puc.GetProductStatusTrend(ctx, start, end)
+	if err != nil {
+		ctx.Error(err)
+		return
+	}
+
+	// Map to DTO
+	var statusesDto []dto.ProductStatusSnapshot
+	for _, s := range statuses {
+		statusesDto = append(statusesDto, dto.ProductStatusSnapshot{
+			Time:   s.OrderTime.Format(constant.DateFormat),
+			Status: s.Status,
+			Count:  s.OrderCount,
+		})
+	}
+
+	// Return as JSON
+	ctx.JSON(http.StatusOK, dto.Response{
+		Success: true,
+		Message: "successfully retrieved product status snapshot",
+		Error:   nil,
+		Data:    statusesDto,
 	})
 }
