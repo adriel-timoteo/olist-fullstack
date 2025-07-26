@@ -52,13 +52,13 @@ func (a *App) initRoutes() {
 	uuc := usecase.NewUserUsecaseImpl(ur, trx)
 	uh := handler.NewUserHandler(uuc)
 
-	// pr := repository.NewPatientRepo()
-	// puc := usecase.NewPatientUsecaseImpl(pr, trx)
-	// ph := handler.NewPatientHandler(puc)
+	pr := repository.NewProductRepo()
+	puc := usecase.NewProductUsecaseImpl(pr, trx)
+	ph := handler.NewProductHandler(puc)
 
-	// mr := repository.NewMedicineRepo()
-	// muc := usecase.NewMedicineUsecaseImpl(mr, trx)
-	// mh := handler.NewMedicineHandler(muc)
+	// cr := repository.NewCustomerRepo()
+	// cuc := usecase.NewCustomerUsecaseImpl(cr, trx)
+	// ch := handler.NewCustomerHandler(cuc)
 
 	a.Router.GET("/ping", func(ctx *gin.Context) {
 		ctx.JSON(http.StatusOK, gin.H{
@@ -70,18 +70,15 @@ func (a *App) initRoutes() {
 	{
 		v1.POST("/register", uh.RegisterUser)
 		v1.POST("/login", uh.LoginUser)
-		// patients := v1.Group("/patients", middleware.Authenticate())
+		products := v1.Group("/products", middleware.Authenticate())
+		{
+			// products.GET("/purchased", ph.GetPurchasedProducts)
+			products.GET("/trends/delivered", ph.GetDeliveredTrend)
+			// products.GET("/status", ph.GetPurchasedProductsStatus)
+		}
+		// customers := v1.Group("/customer", middleware.Authenticate())
 		// {
-		// 	patients.POST("", ph.AddPatient)
-		// 	patients.GET("", ph.GetAllPatients)
-		// 	patients.GET("/:id", ph.GetPatientById)
-		// 	patients.PATCH("/:id", ph.UpdatePatients)
-		// 	patients.DELETE("/:id", ph.DeletePatient)
-		// 	patients.PATCH("/:id/restore", ph.RestoreDeletedPatient)
-		// }
-		// medicines := v1.Group("/medicines", middleware.Authenticate())
-		// {
-		// 	medicines.POST("", mh.AddMedicine)
+		// 	customers.GET("/cities", ch.GetCustomerCities)
 		// }
 	}
 
