@@ -1,10 +1,15 @@
 package usecase
 
 import (
+	"context"
+
+	"github.com/adriel-timoteo/olist-fullstack/backend/ce"
+	"github.com/adriel-timoteo/olist-fullstack/backend/entity"
 	"github.com/adriel-timoteo/olist-fullstack/backend/repository"
 )
 
 type CustomerUsecaseItf interface {
+	GetTopCities(context.Context, int) ([]entity.CustomerCity, error)
 }
 
 type CustomerUsecaseImpl struct {
@@ -17,4 +22,20 @@ func NewCustomerUsecaseImpl(cr repository.CustomerRepoItf, trx repository.Transa
 		cr:  cr,
 		trx: trx,
 	}
+}
+
+func (cuc CustomerUsecaseImpl) GetTopCities(ctx context.Context, limit int) ([]entity.CustomerCity, error) {
+	data, err := cuc.trx.WithinTransaction(ctx, func(ctx context.Context) (any, error) {
+		return cuc.cr.SelectTopCities(ctx, limit)
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	cities, ok := data.([]entity.CustomerCity)
+	if !ok {
+		return nil, ce.NewError(ce.CommonErr, "error occurred")
+	}
+
+	return cities, nil
 }

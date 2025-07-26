@@ -56,9 +56,9 @@ func (a *App) initRoutes() {
 	puc := usecase.NewProductUsecaseImpl(pr, trx)
 	ph := handler.NewProductHandler(puc)
 
-	// cr := repository.NewCustomerRepo()
-	// cuc := usecase.NewCustomerUsecaseImpl(cr, trx)
-	// ch := handler.NewCustomerHandler(cuc)
+	cr := repository.NewCustomerRepo()
+	cuc := usecase.NewCustomerUsecaseImpl(cr, trx)
+	ch := handler.NewCustomerHandler(cuc)
 
 	a.Router.GET("/ping", func(ctx *gin.Context) {
 		ctx.JSON(http.StatusOK, gin.H{
@@ -76,10 +76,10 @@ func (a *App) initRoutes() {
 			products.GET("/trends/delivered", ph.GetDeliveredTrend)
 			products.GET("/snapshot/status", ph.GetProductStatusSnapshot)
 		}
-		// customers := v1.Group("/customer", middleware.Authenticate())
-		// {
-		// 	customers.GET("/cities", ch.GetCustomerCities)
-		// }
+		customers := v1.Group("/customer", middleware.Authenticate())
+		{
+			customers.GET("/cities", ch.GetTopCities)
+		}
 	}
 
 }
