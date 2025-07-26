@@ -1,6 +1,6 @@
 package dto
 
-type CustomerCity struct {
+type CustomerCityCount struct {
 	City  string `json:"city"`
 	Count int    `json:"count"`
 }

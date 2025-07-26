@@ -10,3 +10,8 @@ type ProductStatusSnapshot struct {
 	Status string `json:"status"`
 	Count  int    `json:"count"`
 }
+
+type ProductCategoryCount struct {
+	Category string `json:"category"`
+	Count    int    `json:"count"`
+}

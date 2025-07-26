@@ -72,14 +72,39 @@ func (a *App) initRoutes() {
 		v1.POST("/login", uh.LoginUser)
 		products := v1.Group("/products", middleware.Authenticate())
 		{
-			// products.GET("/purchased", ph.GetPurchasedProducts)
+			products.GET("/top-categories", ph.GetTopCategories)
+			// products.GET("/top-products", ph.GetTopProducts)
 			products.GET("/trends/delivered", ph.GetDeliveredTrend)
-			products.GET("/snapshot/status", ph.GetProductStatusSnapshot)
+			products.GET("/trends/status", ph.GetProductStatusSnapshot)
+			// products.GET("/delivery/performance", ph.GetDeliveryPerformance)
 		}
 		customers := v1.Group("/customer", middleware.Authenticate())
 		{
-			customers.GET("/cities", ch.GetTopCities)
+			customers.GET("/top-cities", ch.GetTopCities)
+			// customers.GET("/total", ch.GetTotalUniqueCustomers)
+			// customers.GET("/repeat-rate", ch.GetRepeatPurchaseRate)
 		}
+
+		// FUTURE DEVELOPMENT
+		// orders := v1.Group("/orders", middleware.Authenticate())
+		// {
+		// 	orders.GET("/kpi/revenue", oh.GetTotalRevenue)
+		// 	orders.GET("/kpi/aov", oh.GetAverageOrderValue)
+		// 	orders.GET("/traffic/daily", oh.GetOrdersPerDay)
+		// 	orders.GET("/revenue/monthly", oh.GetRevenueByMonth)
+		// }
+
+		// marketing := v1.Group("/marketing", middleware.Authenticate())
+		// {
+		// 	marketing.GET("/conversion-rate", mh.GetLeadsToCustomerConversionRate)
+		// 	marketing.GET("/revenue-by-channel", mh.GetRevenueByChannel)
+		// }
+
+		// reviews := v1.Group("/reviews", middleware.Authenticate())
+		// {
+		// 	reviews.GET("/average-score", rh.GetAverageReviewScore)
+		// 	reviews.GET("/score-distribution", rh.GetReviewScoreDistribution)
+		// }
 	}
 
 }

@@ -6,7 +6,6 @@
 - Average Order Value (KPI)
 - Revenue by Month (Line/Bar chart)
 - Number of Orders per Day (Traffic)
-- Orders Trend (Daily & Monthly delivered products – merged)
 
 ## Customer Insights
 
@@ -17,7 +16,6 @@
 ## Product Performance
 
 - Top N Best-Selling Products
-- Products Never Purchased
 - Top N purchased product category\*
 
 ## Delivery Performance

@@ -13,6 +13,7 @@ import (
 type ProductUsecaseItf interface {
 	GetDeliveredTrend(context.Context, time.Time, time.Time, constant.Interval) ([]entity.DeliveredProductTrend, error)
 	GetProductStatusTrend(context.Context, time.Time, time.Time) ([]entity.ProductStatusTrend, error)
+	GetTopCategories(context.Context, int) ([]entity.ProductCategoryCount, error)
 }
 
 type ProductUsecaseImpl struct {
@@ -57,4 +58,20 @@ func (puc ProductUsecaseImpl) GetProductStatusTrend(ctx context.Context, start, 
 	}
 
 	return statuses, nil
+}
+
+func (puc ProductUsecaseImpl) GetTopCategories(ctx context.Context, limit int) ([]entity.ProductCategoryCount, error) {
+	data, err := puc.trx.WithinTransaction(ctx, func(ctx context.Context) (any, error) {
+		return puc.pr.SelectTopCategories(ctx, limit)
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	categories, ok := data.([]entity.ProductCategoryCount)
+	if !ok {
+		return nil, ce.NewError(ce.CommonErr, "error occurred")
+	}
+
+	return categories, nil
 }

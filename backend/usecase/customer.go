@@ -9,7 +9,7 @@ import (
 )
 
 type CustomerUsecaseItf interface {
-	GetTopCities(context.Context, int) ([]entity.CustomerCity, error)
+	GetTopCities(context.Context, int) ([]entity.CustomerCityCount, error)
 }
 
 type CustomerUsecaseImpl struct {
@@ -24,7 +24,7 @@ func NewCustomerUsecaseImpl(cr repository.CustomerRepoItf, trx repository.Transa
 	}
 }
 
-func (cuc CustomerUsecaseImpl) GetTopCities(ctx context.Context, limit int) ([]entity.CustomerCity, error) {
+func (cuc CustomerUsecaseImpl) GetTopCities(ctx context.Context, limit int) ([]entity.CustomerCityCount, error) {
 	data, err := cuc.trx.WithinTransaction(ctx, func(ctx context.Context) (any, error) {
 		return cuc.cr.SelectTopCities(ctx, limit)
 	})
@@ -32,7 +32,7 @@ func (cuc CustomerUsecaseImpl) GetTopCities(ctx context.Context, limit int) ([]e
 		return nil, err
 	}
 
-	cities, ok := data.([]entity.CustomerCity)
+	cities, ok := data.([]entity.CustomerCityCount)
 	if !ok {
 		return nil, ce.NewError(ce.CommonErr, "error occurred")
 	}

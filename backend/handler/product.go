@@ -2,6 +2,7 @@ package handler
 
 import (
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/adriel-timoteo/olist-fullstack/backend/ce"
@@ -69,7 +70,7 @@ func (ph ProductHandler) GetDeliveredTrend(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusOK, dto.Response{
 		Success: true,
-		Message: "successfully retrieved daily delivered products",
+		Message: "success",
 		Error:   nil,
 		Data:    trendsDto,
 	})
@@ -113,8 +114,43 @@ func (ph ProductHandler) GetProductStatusSnapshot(ctx *gin.Context) {
 	// Return as JSON
 	ctx.JSON(http.StatusOK, dto.Response{
 		Success: true,
-		Message: "successfully retrieved product status snapshot",
+		Message: "success",
 		Error:   nil,
 		Data:    statusesDto,
+	})
+}
+
+func (ph ProductHandler) GetTopCategories(ctx *gin.Context) {
+	limitParam := ctx.DefaultQuery("limit", "5")
+
+	// Turn limit to int
+	limit, err := strconv.Atoi(limitParam)
+	if err != nil {
+		ctx.Error(ce.NewError(ce.InvalidAction, "id not valid"))
+		return
+	}
+
+	// Call usecase
+	cities, err := ph.puc.GetTopCategories(ctx, limit)
+	if err != nil {
+		ctx.Error(err)
+		return
+	}
+
+	// Map to DTO
+	var citiesDto []dto.ProductCategoryCount
+	for _, c := range cities {
+		citiesDto = append(citiesDto, dto.ProductCategoryCount{
+			Category: c.Category,
+			Count:    c.ProductCount,
+		})
+	}
+
+	// Return as JSON
+	ctx.JSON(http.StatusOK, dto.Response{
+		Success: true,
+		Message: "success",
+		Error:   nil,
+		Data:    citiesDto,
 	})
 }

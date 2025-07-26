@@ -9,7 +9,7 @@ import (
 )
 
 type CustomerRepoItf interface {
-	SelectTopCities(context.Context, int) ([]entity.CustomerCity, error)
+	SelectTopCities(context.Context, int) ([]entity.CustomerCityCount, error)
 }
 
 type CustomerRepoImpl struct {
@@ -19,7 +19,7 @@ func NewCustomerRepo() CustomerRepoImpl {
 	return CustomerRepoImpl{}
 }
 
-func (cr CustomerRepoImpl) SelectTopCities(ctx context.Context, limit int) ([]entity.CustomerCity, error) {
+func (cr CustomerRepoImpl) SelectTopCities(ctx context.Context, limit int) ([]entity.CustomerCityCount, error) {
 	tx, ok := ctx.Value(txCtxKey{}).(*sql.Tx)
 	if !ok {
 		return nil, ce.NewError(ce.DatabaseError, "internal server error")
@@ -41,9 +41,9 @@ func (cr CustomerRepoImpl) SelectTopCities(ctx context.Context, limit int) ([]en
 	}
 	defer rows.Close()
 
-	var results []entity.CustomerCity
+	var results []entity.CustomerCityCount
 	for rows.Next() {
-		var record entity.CustomerCity
+		var record entity.CustomerCityCount
 		if err := rows.Scan(&record.City, &record.CustomerCount); err != nil {
 			return nil, ce.NewError(ce.DatabaseError, "failed to scan row")
 		}

@@ -38,9 +38,9 @@ func (ch CustomerHandler) GetTopCities(ctx *gin.Context) {
 	}
 
 	// Map to DTO
-	var citiesDto []dto.CustomerCity
+	var citiesDto []dto.CustomerCityCount
 	for _, c := range cities {
-		citiesDto = append(citiesDto, dto.CustomerCity{
+		citiesDto = append(citiesDto, dto.CustomerCityCount{
 			City:  c.City,
 			Count: c.CustomerCount,
 		})
@@ -49,7 +49,7 @@ func (ch CustomerHandler) GetTopCities(ctx *gin.Context) {
 	// Return as JSON
 	ctx.JSON(http.StatusOK, dto.Response{
 		Success: true,
-		Message: "successfully retrieved product status snapshot",
+		Message: "success",
 		Error:   nil,
 		Data:    citiesDto,
 	})

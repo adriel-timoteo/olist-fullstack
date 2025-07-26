@@ -12,3 +12,8 @@ type ProductStatusTrend struct {
 	Status     string
 	OrderCount int
 }
+
+type ProductCategoryCount struct {
+	Category     string
+	ProductCount int
+}

@@ -1,6 +1,6 @@
 package entity
 
-type CustomerCity struct {
+type CustomerCityCount struct {
 	City          string
 	CustomerCount int
 }
