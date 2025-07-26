@@ -13,6 +13,8 @@ const DailyTrendChart = () => {
     data,
     xField: "date",
     yField: "value",
+    autoFit: true,
+    height: 300,
     point: {
       size: 5,
       shape: "diamond",

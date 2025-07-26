@@ -1,3 +1,4 @@
+import { Row, Col } from "antd";
 import DashboardCard from "../components/DashboardCard";
 import DailyTrendChart from "../components/charts/DailyTrendChart";
 import MonthlyTrendChart from "../components/charts/MonthlyTrendChart";
@@ -6,25 +7,28 @@ import TopCustomerCitiesChart from "../components/charts/TopCustomerCitiesChart"
 
 const AnalysisDashboard = () => {
   return (
-    <div
-      style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px" }}
-    >
-      <DashboardCard title="Daily Trend of Delivered Products">
-        <DailyTrendChart />
-      </DashboardCard>
-
-      <DashboardCard title="Monthly Trend of Delivered Products">
-        <MonthlyTrendChart />
-      </DashboardCard>
-
-      <DashboardCard title="Daily Product Purchase Status">
-        <ProductStatusChart />
-      </DashboardCard>
-
-      <DashboardCard title="Top N Customer Cities">
-        <TopCustomerCitiesChart />
-      </DashboardCard>
-    </div>
+    <Row gutter={[16, 16]}>
+      <Col xs={24} md={12}>
+        <DashboardCard title="Daily Trend of Delivered Products" height={350}>
+          <DailyTrendChart />
+        </DashboardCard>
+      </Col>
+      <Col xs={24} md={12}>
+        <DashboardCard title="Monthly Trend of Delivered Products" height={350}>
+          <MonthlyTrendChart />
+        </DashboardCard>
+      </Col>
+      <Col xs={24} md={12}>
+        <DashboardCard title="Daily Product Purchase Status" height={350}>
+          <ProductStatusChart />
+        </DashboardCard>
+      </Col>
+      <Col xs={24} md={12}>
+        <DashboardCard title="Top N Customer Cities" height={350}>
+          <TopCustomerCitiesChart />
+        </DashboardCard>
+      </Col>
+    </Row>
   );
 };
 

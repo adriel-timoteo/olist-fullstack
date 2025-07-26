@@ -13,11 +13,8 @@ const ProductStatusChart = () => {
     angleField: "value",
     colorField: "type",
     radius: 1,
-    label: {
-      type: "spider",
-      content: "{name}\n{percentage}",
-    },
-    interactions: [{ type: "element-active" }],
+    autoFit: true,
+    height: 300,
   };
 
   return <Pie {...config} />;

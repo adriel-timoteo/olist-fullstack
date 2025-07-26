@@ -12,8 +12,8 @@ const MonthlyTrendChart = () => {
     data,
     xField: "month",
     yField: "value",
-    color: "#52c41a",
-    columnWidthRatio: 0.5,
+    autoFit: true,
+    height: 300,
   };
 
   return <Column {...config} />;

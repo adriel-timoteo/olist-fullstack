@@ -13,8 +13,8 @@ const TopCustomerCitiesChart = () => {
     xField: "customers",
     yField: "city",
     seriesField: "city",
-    color: "#faad14",
-    legend: false,
+    autoFit: true,
+    height: 300,
   };
 
   return <Bar {...config} />;
