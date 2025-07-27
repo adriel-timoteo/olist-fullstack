@@ -5,23 +5,24 @@ import HomePage from "../../pages/dashboard/HomePage";
 import AboutPage from "../../pages/dashboard/AboutPage";
 import AnalysisPage from "../../pages/dashboard/AnalysisPage";
 import LoginPage from "../../pages/auth/LoginPage";
+import { RequireAuth, RequireUnauth } from "./guards";
 
 export const AppRoutes = () => {
   return (
     <BrowserRouter>
       <Suspense fallback={<LoadingPage />}>
         <Routes>
-          {/* <Route element={<RequireUnauth />}> */}
-          {/* <Route path="/register" element={<RegisterPage />} /> */}
-          <Route path="/login" element={<LoginPage />} />
-          {/* </Route> */}
+          <Route element={<RequireUnauth />}>
+            {/* <Route path="/register" element={<RegisterPage />} /> */}
+            <Route path="/login" element={<LoginPage />} />
+          </Route>
 
-          {/* <Route element={<RequireAuth />}> */}
-          <Route path="/" element={<HomePage />} />
-          <Route path="/about" element={<AboutPage />} />
-          <Route path="/analysis" element={<AnalysisPage />} />
+          <Route element={<RequireAuth />}>
+            <Route path="/" element={<HomePage />} />
+            <Route path="/about" element={<AboutPage />} />
+            <Route path="/analysis" element={<AnalysisPage />} />
+          </Route>
 
-          {/* </Route> */}
           {/* 404 FALLBACK */}
           {/* <Route
             path="*"
