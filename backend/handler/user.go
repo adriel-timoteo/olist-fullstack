@@ -45,12 +45,7 @@ func (uh UserHandler) RegisterUser(ctx *gin.Context) {
 		Email: res.Email,
 	}
 
-	ctx.JSON(http.StatusCreated, dto.Response{
-		Success: true,
-		Message: "register successful",
-		Error:   nil,
-		Data:    resDto,
-	})
+	ctx.JSON(http.StatusCreated, dto.SuccessResponse(resDto, "register successful"))
 }
 
 func (uh UserHandler) LoginUser(ctx *gin.Context) {
@@ -77,10 +72,5 @@ func (uh UserHandler) LoginUser(ctx *gin.Context) {
 		Token: res.Token,
 	}
 
-	ctx.JSON(http.StatusOK, dto.Response{
-		Success: true,
-		Message: "login successful",
-		Error:   nil,
-		Data:    resToken,
-	})
+	ctx.JSON(http.StatusOK, dto.SuccessResponse(resToken, "login successful"))
 }

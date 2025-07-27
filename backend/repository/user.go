@@ -92,7 +92,7 @@ func (ur UserRepoImpl) GetUserByEmail(ctx context.Context, req entity.ReqLoginUs
 	err := tx.QueryRowContext(ctx, q, req.Email).Scan(&user.Id, &user.Email, &user.Password)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return nil, ce.NewError(ce.InvalidAction, "invalid credentials")
+			return nil, ce.NewError(ce.ValidationError, "invalid credentials")
 		}
 		return nil, ce.NewError(ce.DatabaseError, "internal server error")
 	}

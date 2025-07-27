@@ -94,6 +94,32 @@ const DashboardLayout = ({ children }: Props) => {
       key: "/analysis",
       icon: <BarChartOutlined />,
       label: "Analysis",
+      children: [
+        {
+          key: "/sales",
+          label: "Sales Overview",
+        },
+        {
+          key: "/customer",
+          label: "Customer Insights",
+        },
+        {
+          key: "/product",
+          label: "Product Performance",
+        },
+        {
+          key: "/delivery",
+          label: "Delivery Performance",
+        },
+        {
+          key: "/marketing",
+          label: "Marketing Funnel Insights",
+        },
+        {
+          key: "/review",
+          label: "Review & Customer Satisfaction",
+        },
+      ],
     },
   ];
 
@@ -110,7 +136,7 @@ const DashboardLayout = ({ children }: Props) => {
           theme="dark"
           mode="inline"
           selectedKeys={[location.pathname]}
-          onClick={(e) => navigate(e.key)}
+          onClick={(e) => navigate(e.keyPath.reverse().join(""))}
           items={sidebarItems}
         />
       </Sider>

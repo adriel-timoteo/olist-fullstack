@@ -26,7 +26,7 @@ func (ch CustomerHandler) GetTopCities(ctx *gin.Context) {
 	// Turn limit to int
 	limit, err := strconv.Atoi(limitParam)
 	if err != nil {
-		ctx.Error(ce.NewError(ce.InvalidAction, "id not valid"))
+		ctx.Error(ce.NewError(ce.ValidationError, "id not valid"))
 		return
 	}
 
@@ -47,10 +47,5 @@ func (ch CustomerHandler) GetTopCities(ctx *gin.Context) {
 	}
 
 	// Return as JSON
-	ctx.JSON(http.StatusOK, dto.Response{
-		Success: true,
-		Message: "success",
-		Error:   nil,
-		Data:    citiesDto,
-	})
+	ctx.JSON(http.StatusOK, dto.SuccessResponse(citiesDto, "success"))
 }

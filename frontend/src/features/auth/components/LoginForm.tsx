@@ -1,48 +1,58 @@
-import { Button, Card, Form, Input, Typography } from "antd";
 import { LockOutlined, MailOutlined } from "@ant-design/icons";
+import { Button, Card, Form, Input, Spin, Typography } from "antd";
+import { useLogin } from "../hooks/useLogin";
+import type { LoginRequest } from "../types";
 
 const { Title } = Typography;
 
-const onFinish = (values: unknown) => {
-  console.log("Login values:", values);
+const LoginForm = () => {
+  const { mutate: login, isPending, contextHolder } = useLogin();
+
+  const onFinish = (values: LoginRequest) => {
+    login(values);
+    console.log("Login values:", values);
+  };
+
+  return (
+    <>
+      {contextHolder}
+      <Card style={{ maxWidth: 400, width: "100%" }}>
+        <Title level={2} className="text-center mb-4">
+          Login
+        </Title>
+        <Form
+          name="login"
+          initialValues={{ remember: true }}
+          onFinish={onFinish}
+          layout="vertical"
+        >
+          <Form.Item
+            name="email"
+            rules={[{ required: true, message: "Please input your email!" }]}
+          >
+            <Input prefix={<MailOutlined />} placeholder="Email" size="large" />
+          </Form.Item>
+
+          <Form.Item
+            name="password"
+            rules={[{ required: true, message: "Please input your password!" }]}
+          >
+            <Input.Password
+              prefix={<LockOutlined />}
+              placeholder="Password"
+              size="large"
+            />
+          </Form.Item>
+
+          <Form.Item>
+            <Button type="primary" htmlType="submit" block size="large">
+              {isPending ? <Spin /> : "Log In"}
+            </Button>
+          </Form.Item>
+        </Form>
+      </Card>
+    </>
+  );
 };
-
-const LoginForm = () => (
-  <Card style={{ maxWidth: 400, width: "100%" }}>
-    <Title level={2} className="text-center mb-4">
-      Login
-    </Title>
-    <Form
-      name="login"
-      initialValues={{ remember: true }}
-      onFinish={onFinish}
-      layout="vertical"
-    >
-      <Form.Item
-        name="email"
-        rules={[{ required: true, message: "Please input your email!" }]}
-      >
-        <Input prefix={<MailOutlined />} placeholder="Email" size="large" />
-      </Form.Item>
-
-      <Form.Item
-        name="password"
-        rules={[{ required: true, message: "Please input your password!" }]}
-      >
-        <Input.Password
-          prefix={<LockOutlined />}
-          placeholder="Password"
-          size="large"
-        />
-      </Form.Item>
-
-      <Form.Item>
-        <Button type="primary" htmlType="submit" block size="large">
-          Log In
-        </Button>
-      </Form.Item>
-    </Form>
-  </Card>
-);
 
 export default LoginForm;

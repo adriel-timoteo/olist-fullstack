@@ -38,7 +38,7 @@ func (puc ProductUsecaseImpl) GetDeliveredTrend(ctx context.Context, start, end 
 
 	trends, ok := data.([]entity.DeliveredProductTrend)
 	if !ok {
-		return nil, ce.NewError(ce.CommonErr, "error occurred")
+		return nil, ce.NewError(ce.InternalError, "error occurred")
 	}
 
 	return trends, nil
@@ -54,7 +54,7 @@ func (puc ProductUsecaseImpl) GetProductStatusTrend(ctx context.Context, start, 
 
 	statuses, ok := data.([]entity.ProductStatusTrend)
 	if !ok {
-		return nil, ce.NewError(ce.CommonErr, "error occurred")
+		return nil, ce.NewError(ce.InternalError, "error occurred")
 	}
 
 	return statuses, nil
@@ -70,7 +70,7 @@ func (puc ProductUsecaseImpl) GetTopCategories(ctx context.Context, limit int) (
 
 	categories, ok := data.([]entity.ProductCategoryCount)
 	if !ok {
-		return nil, ce.NewError(ce.CommonErr, "error occurred")
+		return nil, ce.NewError(ce.InternalError, "error occurred")
 	}
 
 	return categories, nil

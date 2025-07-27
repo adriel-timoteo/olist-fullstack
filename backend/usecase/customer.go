@@ -34,7 +34,7 @@ func (cuc CustomerUsecaseImpl) GetTopCities(ctx context.Context, limit int) ([]e
 
 	cities, ok := data.([]entity.CustomerCityCount)
 	if !ok {
-		return nil, ce.NewError(ce.CommonErr, "error occurred")
+		return nil, ce.NewError(ce.InternalError, "error occurred")
 	}
 
 	return cities, nil

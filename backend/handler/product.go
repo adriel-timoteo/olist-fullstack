@@ -30,14 +30,14 @@ func (ph ProductHandler) GetDeliveredTrend(ctx *gin.Context) {
 	// Parse start date
 	start, err := time.Parse(constant.DateFormat, startParam)
 	if err != nil {
-		ctx.Error(ce.NewError(ce.InvalidAction, "start date not valid"))
+		ctx.Error(ce.NewError(ce.ValidationError, "start date not valid"))
 		return
 	}
 
 	// Parse end date
 	end, err := time.Parse(constant.DateFormat, endParam)
 	if err != nil {
-		ctx.Error(ce.NewError(ce.InvalidAction, "end date not valid"))
+		ctx.Error(ce.NewError(ce.ValidationError, "end date not valid"))
 		return
 	}
 
@@ -48,7 +48,7 @@ func (ph ProductHandler) GetDeliveredTrend(ctx *gin.Context) {
 	case "month":
 		interval = constant.IntervalMonth
 	default:
-		ctx.Error(ce.NewError(ce.InvalidAction, "interval must be 'day' or 'month'"))
+		ctx.Error(ce.NewError(ce.ValidationError, "interval must be 'day' or 'month'"))
 		return
 	}
 
@@ -68,12 +68,7 @@ func (ph ProductHandler) GetDeliveredTrend(ctx *gin.Context) {
 		})
 	}
 
-	ctx.JSON(http.StatusOK, dto.Response{
-		Success: true,
-		Message: "success",
-		Error:   nil,
-		Data:    trendsDto,
-	})
+	ctx.JSON(http.StatusOK, dto.SuccessResponse(trendsDto, "success"))
 }
 
 func (ph ProductHandler) GetProductStatusSnapshot(ctx *gin.Context) {
@@ -83,14 +78,14 @@ func (ph ProductHandler) GetProductStatusSnapshot(ctx *gin.Context) {
 	// Parse start date
 	start, err := time.Parse(constant.DateFormat, startParam)
 	if err != nil {
-		ctx.Error(ce.NewError(ce.InvalidAction, "start date not valid"))
+		ctx.Error(ce.NewError(ce.ValidationError, "start date not valid"))
 		return
 	}
 
 	// Parse end date
 	end, err := time.Parse(constant.DateFormat, endParam)
 	if err != nil {
-		ctx.Error(ce.NewError(ce.InvalidAction, "end date not valid"))
+		ctx.Error(ce.NewError(ce.ValidationError, "end date not valid"))
 		return
 	}
 
@@ -112,12 +107,7 @@ func (ph ProductHandler) GetProductStatusSnapshot(ctx *gin.Context) {
 	}
 
 	// Return as JSON
-	ctx.JSON(http.StatusOK, dto.Response{
-		Success: true,
-		Message: "success",
-		Error:   nil,
-		Data:    statusesDto,
-	})
+	ctx.JSON(http.StatusOK, dto.SuccessResponse(statusesDto, "success"))
 }
 
 func (ph ProductHandler) GetTopCategories(ctx *gin.Context) {
@@ -126,31 +116,26 @@ func (ph ProductHandler) GetTopCategories(ctx *gin.Context) {
 	// Turn limit to int
 	limit, err := strconv.Atoi(limitParam)
 	if err != nil {
-		ctx.Error(ce.NewError(ce.InvalidAction, "id not valid"))
+		ctx.Error(ce.NewError(ce.ValidationError, "id not valid"))
 		return
 	}
 
 	// Call usecase
-	cities, err := ph.puc.GetTopCategories(ctx, limit)
+	categories, err := ph.puc.GetTopCategories(ctx, limit)
 	if err != nil {
 		ctx.Error(err)
 		return
 	}
 
 	// Map to DTO
-	var citiesDto []dto.ProductCategoryCount
-	for _, c := range cities {
-		citiesDto = append(citiesDto, dto.ProductCategoryCount{
+	var catDto []dto.ProductCategoryCount
+	for _, c := range categories {
+		catDto = append(catDto, dto.ProductCategoryCount{
 			Category: c.Category,
 			Count:    c.ProductCount,
 		})
 	}
 
 	// Return as JSON
-	ctx.JSON(http.StatusOK, dto.Response{
-		Success: true,
-		Message: "success",
-		Error:   nil,
-		Data:    citiesDto,
-	})
+	ctx.JSON(http.StatusOK, dto.SuccessResponse(catDto, "success"))
 }

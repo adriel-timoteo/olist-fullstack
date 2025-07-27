@@ -34,12 +34,12 @@ func (uuc UserUsecaseImpl) RegisterUser(ctx context.Context, req entity.ReqRegis
 			return nil, err
 		}
 		if exist {
-			return nil, ce.NewError(ce.AlreadyExist, "email already used")
+			return nil, ce.NewError(ce.Conflict, "email already used")
 		}
 
 		hashPwd, err := util.HashPassword(req.Password)
 		if err != nil {
-			return nil, ce.NewError(ce.CommonErr, "error occured")
+			return nil, ce.NewError(ce.InternalError, "error occured")
 		}
 
 		req.Password = hashPwd
@@ -57,7 +57,7 @@ func (uuc UserUsecaseImpl) RegisterUser(ctx context.Context, req entity.ReqRegis
 
 	user, ok := data.(*entity.User)
 	if !ok {
-		return nil, ce.NewError(ce.CommonErr, "error occured")
+		return nil, ce.NewError(ce.InternalError, "error occured")
 	}
 
 	return user, nil
@@ -74,13 +74,13 @@ func (uuc UserUsecaseImpl) LoginUser(ctx context.Context, req entity.ReqLoginUse
 		fmt.Println("comparing hash")
 		ok := util.CompareHashPassword(req.Password, user.Password)
 		if !ok {
-			return nil, ce.NewError(ce.InvalidAction, "invalid credentials")
+			return nil, ce.NewError(ce.ValidationError, "invalid credentials")
 		}
 
 		fmt.Println("generating token")
 		tokenRes, err := util.GenerateJWTToken(user.Id)
 		if err != nil {
-			return nil, ce.NewError(ce.CommonErr, "error occured")
+			return nil, ce.NewError(ce.InternalError, "error occured")
 		}
 
 		return tokenRes, nil
@@ -92,7 +92,7 @@ func (uuc UserUsecaseImpl) LoginUser(ctx context.Context, req entity.ReqLoginUse
 	fmt.Println("token")
 	token, ok := data.(string)
 	if !ok {
-		return nil, ce.NewError(ce.CommonErr, "error occured")
+		return nil, ce.NewError(ce.InternalError, "error occured")
 	}
 
 	return &entity.Token{Token: token}, nil

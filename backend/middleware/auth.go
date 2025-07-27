@@ -63,7 +63,7 @@ func Authenticate() gin.HandlerFunc {
 
 		intUserId, err := strconv.Atoi(userId)
 		if err != nil {
-			ctx.Error(ce.NewError(ce.CommonErr, "auth error"))
+			ctx.Error(ce.NewError(ce.Unauthorized, "auth error"))
 			ctx.Abort()
 			return
 		}

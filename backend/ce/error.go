@@ -3,7 +3,7 @@ package ce
 import "net/http"
 
 type CustomError struct {
-	ErrorCode    int
+	ErrorCode    string
 	ErrorMessage string
 }
 
@@ -11,7 +11,7 @@ func (err CustomError) Error() string {
 	return err.ErrorMessage
 }
 
-func NewError(errCode int, errMsg string) *CustomError {
+func NewError(errCode string, errMsg string) *CustomError {
 	return &CustomError{
 		ErrorCode:    errCode,
 		ErrorMessage: errMsg,
@@ -20,26 +20,35 @@ func NewError(errCode int, errMsg string) *CustomError {
 
 func (err CustomError) GetHTTPErrorCode() int {
 	switch err.ErrorCode {
-	case InvalidAction:
+	case ValidationError:
 		return http.StatusBadRequest
-	case AlreadyExist:
-		return http.StatusBadRequest
-	case NotExist:
+	case Conflict:
+		return http.StatusConflict
+	case NotFound:
 		return http.StatusNotFound
 	case Unauthorized:
 		return http.StatusUnauthorized
-	case DatabaseError:
-		return http.StatusInternalServerError
+	case Forbidden:
+		return http.StatusForbidden
+	case ServiceUnavailable:
+		return http.StatusServiceUnavailable
+	case TimeoutError:
+		return http.StatusGatewayTimeout
 	default:
 		return http.StatusInternalServerError
 	}
 }
 
 const (
-	InvalidAction = 40000
-	AlreadyExist  = 40001
-	NotExist      = 40002
-	Unauthorized  = 40003
-	CommonErr     = 50000
-	DatabaseError = 50001
+	ValidationError = "VALIDATION_ERROR"
+	Unauthorized    = "UNAUTHORIZED"
+	Forbidden       = "FORBIDDEN"
+	NotFound        = "NOT_FOUND"
+	Conflict        = "CONFLICT"
+	BadRequest      = "BAD_REQUEST"
+
+	InternalError      = "INTERNAL_ERROR"
+	DatabaseError      = "DATABASE_ERROR"
+	ServiceUnavailable = "SERVICE_UNAVAILABLE"
+	TimeoutError       = "TIMEOUT_ERROR"
 )
