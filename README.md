@@ -7,13 +7,13 @@
 - Revenue by Month (Line/Bar chart)
 - Number of Orders per Day (Traffic)
 
-## Customer Insights
+## Customer & Marketing
 
 - Total Unique Customers
 - Repeat Purchase Rate
 - Top N customer cities (user demography)\*
 
-## Product Performance
+## Product & Delivery
 
 - Top N Best-Selling Products
 - Top N purchased product category\*

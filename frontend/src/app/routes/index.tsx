@@ -1,10 +1,10 @@
 import { Suspense } from "react";
 import { BrowserRouter, Route, Routes } from "react-router";
 import LoadingPage from "../../components/LoadingPage";
-import HomePage from "../../pages/dashboard/HomePage";
-import AboutPage from "../../pages/dashboard/AboutPage";
-import AnalysisPage from "../../pages/dashboard/AnalysisPage";
 import LoginPage from "../../pages/auth/LoginPage";
+import AboutPage from "../../pages/dashboard/AboutPage";
+import DeliveryPage from "../../pages/dashboard/DeliveryPage";
+import HomePage from "../../pages/dashboard/HomePage";
 import { RequireAuth, RequireUnauth } from "./guards";
 
 export const AppRoutes = () => {
@@ -20,7 +20,7 @@ export const AppRoutes = () => {
           <Route element={<RequireAuth />}>
             <Route path="/" element={<HomePage />} />
             <Route path="/about" element={<AboutPage />} />
-            <Route path="/analysis" element={<AnalysisPage />} />
+            <Route path="/analysis/delivery" element={<DeliveryPage />} />
           </Route>
 
           {/* 404 FALLBACK */}

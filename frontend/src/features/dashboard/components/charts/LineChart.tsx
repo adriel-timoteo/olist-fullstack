@@ -1,39 +1,59 @@
+import { useEffect, useState } from "react";
+import { Spin } from "antd";
 import { Line, type LineConfig } from "@ant-design/plots";
-import { Card, Typography } from "antd";
-
-const { Text } = Typography;
+import { Dayjs } from "dayjs";
 
 type LineChartProps = Partial<LineConfig> & {
-  title: string;
-  data: Record<string, unknown>[];
   xField: string;
   yField: string;
-  color?: string;
+  fetchData?: (
+    start: string,
+    end: string
+  ) => Promise<Record<string, unknown>[]>;
+  dateRange?: [Dayjs, Dayjs];
+  data?: Record<string, unknown>[];
   height?: number;
 };
 
 const LineChart = ({
-  title,
-  data,
   xField,
   yField,
+  fetchData,
+  dateRange,
+  data = [],
+  height = 300,
   ...rest
 }: LineChartProps) => {
+  const [chartData, setChartData] = useState(data);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (fetchData && dateRange) {
+      const [start, end] = dateRange;
+      setLoading(true);
+      fetchData(start.format("YYYY-MM-DD"), end.format("YYYY-MM-DD"))
+        .then((res) => setChartData(res))
+        .finally(() => setLoading(false));
+    }
+  }, [fetchData, dateRange]);
+
   const config: LineConfig = {
-    data,
+    data: chartData,
     xField,
     yField,
     autoFit: true,
     smooth: true,
     point: { size: 5, shape: "diamond" },
+    height,
     ...rest,
   };
 
-  return (
-    <Card>
-      <Text strong>{title}</Text>
-      <Line {...config} />
-    </Card>
+  return loading ? (
+    <Spin />
+  ) : chartData.length > 0 ? (
+    <Line {...config} />
+  ) : (
+    <div>No data available</div>
   );
 };
 

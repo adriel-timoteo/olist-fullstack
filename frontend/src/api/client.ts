@@ -6,7 +6,7 @@ export async function fetchClient<T>(
   input: string,
   init?: RequestInit
 ): Promise<T> {
-  const token = localStorage.getItem("access_token");
+  const token = localStorage.getItem("token");
   const url = input.startsWith("http") ? input : `${BASE_URL}${input}`;
 
   const response = await fetch(url, {
