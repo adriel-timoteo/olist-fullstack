@@ -1,18 +1,45 @@
 import { Col, Row } from "antd";
+import dayjs from "dayjs";
+import { totalUniqueCustApi } from "../api/count";
+import { repeatPurchaseRateApi } from "../api/rate";
 import { deliveredTrendApi } from "../api/trend";
 import ChartCard from "./ChartCard";
 import LineChart from "./charts/LineChart";
 import NumberDisplay from "./charts/NumberDisplay";
 import DateRangeDropdown from "./filters/DateRangeDropdown";
 import MonthRangeDropdown from "./filters/MonthRangeDropdown";
-import dayjs from "dayjs";
 
 const AnalysisDashboard = () => {
   return (
     <Row gutter={[16, 16]}>
       {/* KPI */}
-      <Col xs={24} md={12}>
-        <NumberDisplay title="Total Delivered Products" value={200} />
+      <Col xs={12} md={6}>
+        <NumberDisplay
+          title="Total Unique Customer"
+          fetchData={() => totalUniqueCustApi().then((res) => res.data.count)}
+        />
+      </Col>
+      <Col xs={12} md={6}>
+        <NumberDisplay
+          title="Repeat Purchase Rate"
+          fetchData={() =>
+            repeatPurchaseRateApi().then((res) => res.data.rate * 100)
+          }
+          suffix="%"
+          precision={2}
+        />
+      </Col>
+      <Col xs={12} md={6}>
+        <NumberDisplay
+          title="Total Unique Customer"
+          fetchData={() => totalUniqueCustApi().then((res) => res.data.count)}
+        />
+      </Col>
+      <Col xs={12} md={6}>
+        <NumberDisplay
+          title="Total Unique Customer"
+          fetchData={() => totalUniqueCustApi().then((res) => res.data.count)}
+        />
       </Col>
 
       {/* Daily Trend */}

@@ -1,10 +1,11 @@
-import { Card, Typography } from "antd";
+import { Card, Typography, Spin } from "antd";
+import { useEffect, useState } from "react";
 
 const { Title, Text } = Typography;
 
 interface NumberDisplayProps {
   title: string;
-  value: number | string;
+  fetchData?: () => Promise<number>;
   prefix?: string;
   suffix?: string;
   precision?: number;
@@ -14,15 +15,30 @@ interface NumberDisplayProps {
 
 const NumberDisplay = ({
   title,
-  value,
+  fetchData,
   prefix = "",
   suffix = "",
   precision = 0,
   color = "#1677ff",
   height = 120,
 }: NumberDisplayProps) => {
-  const formattedValue =
-    typeof value === "number" ? value.toFixed(precision) : value;
+  const [displayValue, setDisplayValue] = useState(0);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (fetchData) {
+      setLoading(true);
+      fetchData()
+        .then((res) => {
+          setDisplayValue(res);
+        })
+        .finally(() => {
+          setLoading(false);
+        });
+    }
+  }, [fetchData]);
+
+  const formattedValue = displayValue.toFixed(precision);
 
   return (
     <Card
@@ -34,11 +50,15 @@ const NumberDisplay = ({
       }}
     >
       <Text type="secondary">{title}</Text>
-      <Title level={2} style={{ color, margin: 0 }}>
-        {prefix}
-        {formattedValue}
-        {suffix}
-      </Title>
+      {loading ? (
+        <Spin />
+      ) : (
+        <Title level={2} style={{ color, margin: 0 }}>
+          {prefix}
+          {formattedValue}
+          {suffix}
+        </Title>
+      )}
     </Card>
   );
 };

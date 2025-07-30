@@ -50,12 +50,12 @@ func (cuc CustomerUsecaseImpl) GetTotalUniqueCustomers(ctx context.Context) (*en
 		return nil, err
 	}
 
-	count, ok := data.(entity.Count)
+	count, ok := data.(*entity.Count)
 	if !ok {
 		return nil, ce.NewError(ce.InternalError, "error occurred")
 	}
 
-	return &count, nil
+	return count, nil
 }
 
 func (cuc CustomerUsecaseImpl) GetRepeatPurchaseRate(ctx context.Context) (*entity.Rate, error) {
@@ -66,10 +66,10 @@ func (cuc CustomerUsecaseImpl) GetRepeatPurchaseRate(ctx context.Context) (*enti
 		return nil, err
 	}
 
-	rate, ok := data.(entity.Rate)
+	rate, ok := data.(*entity.Rate)
 	if !ok {
 		return nil, ce.NewError(ce.InternalError, "error occurred")
 	}
 
-	return &rate, nil
+	return rate, nil
 }
