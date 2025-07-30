@@ -7,7 +7,7 @@
 - Revenue by Month (Line/Bar chart)
 - Number of Orders per Day (Traffic)
 
-## Customer & Marketing
+## Customer
 
 - Total Unique Customers
 - Repeat Purchase Rate

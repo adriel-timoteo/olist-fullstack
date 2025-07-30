@@ -73,7 +73,6 @@ func (a *App) initRoutes() {
 		products := v1.Group("/products", middleware.Authenticate())
 		{
 			products.GET("/top-categories", ph.GetTopCategories)
-			// products.GET("/top-products", ph.GetTopProducts)
 			products.GET("/trends/delivered", ph.GetDeliveredTrend)
 			products.GET("/trends/status", ph.GetProductStatusSnapshot)
 			// products.GET("/delivery/performance", ph.GetDeliveryPerformance)

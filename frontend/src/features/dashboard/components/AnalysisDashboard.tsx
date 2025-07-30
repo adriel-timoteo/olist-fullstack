@@ -7,7 +7,7 @@ import DateRangeDropdown from "./filters/DateRangeDropdown";
 import MonthRangeDropdown from "./filters/MonthRangeDropdown";
 import dayjs from "dayjs";
 
-const DeliveryDashboard = () => {
+const AnalysisDashboard = () => {
   return (
     <Row gutter={[16, 16]}>
       {/* KPI */}
@@ -63,4 +63,4 @@ const DeliveryDashboard = () => {
   );
 };
 
-export default DeliveryDashboard;
+export default AnalysisDashboard;

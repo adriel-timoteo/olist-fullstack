@@ -2,8 +2,9 @@ import { Suspense } from "react";
 import { BrowserRouter, Route, Routes } from "react-router";
 import LoadingPage from "../../components/LoadingPage";
 import LoginPage from "../../pages/auth/LoginPage";
+import RegisterPage from "../../pages/auth/RegisterPage";
 import AboutPage from "../../pages/dashboard/AboutPage";
-import DeliveryPage from "../../pages/dashboard/DeliveryPage";
+import AnalysisPage from "../../pages/dashboard/AnalysisPage";
 import HomePage from "../../pages/dashboard/HomePage";
 import { RequireAuth, RequireUnauth } from "./guards";
 
@@ -13,14 +14,14 @@ export const AppRoutes = () => {
       <Suspense fallback={<LoadingPage />}>
         <Routes>
           <Route element={<RequireUnauth />}>
-            {/* <Route path="/register" element={<RegisterPage />} /> */}
+            <Route path="/register" element={<RegisterPage />} />
             <Route path="/login" element={<LoginPage />} />
           </Route>
 
           <Route element={<RequireAuth />}>
             <Route path="/" element={<HomePage />} />
             <Route path="/about" element={<AboutPage />} />
-            <Route path="/analysis/delivery" element={<DeliveryPage />} />
+            <Route path="/analysis" element={<AnalysisPage />} />
           </Route>
 
           {/* 404 FALLBACK */}

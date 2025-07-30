@@ -1,14 +1,14 @@
 import { LockOutlined, MailOutlined } from "@ant-design/icons";
 import { Button, Card, Form, Input, Spin, Typography } from "antd";
 import { useLogin } from "../hooks/useLogin";
-import type { LoginRequest } from "../types";
+import type { AuthRequest } from "../types";
 
 const { Title } = Typography;
 
 const LoginForm = () => {
   const { mutate: login, isPending, contextHolder } = useLogin();
 
-  const onFinish = (values: LoginRequest) => {
+  const onFinish = (values: AuthRequest) => {
     login(values);
     console.log("Login values:", values);
   };

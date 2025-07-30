@@ -94,32 +94,32 @@ const DashboardLayout = ({ children }: Props) => {
       key: "/analysis",
       icon: <BarChartOutlined />,
       label: "Analysis",
-      children: [
-        {
-          key: "/sales",
-          label: "Sales Overview",
-        },
-        {
-          key: "/customer",
-          label: "Customer Insights",
-        },
-        {
-          key: "/product",
-          label: "Product Performance",
-        },
-        {
-          key: "/delivery",
-          label: "Delivery Performance",
-        },
-        {
-          key: "/marketing",
-          label: "Marketing Funnel Insights",
-        },
-        {
-          key: "/review",
-          label: "Review & Customer Satisfaction",
-        },
-      ],
+      // children: [
+      //   {
+      //     key: "/sales",
+      //     label: "Sales Overview",
+      //   },
+      //   {
+      //     key: "/customer",
+      //     label: "Customer Insights",
+      //   },
+      //   {
+      //     key: "/product",
+      //     label: "Product Performance",
+      //   },
+      //   {
+      //     key: "/delivery",
+      //     label: "Delivery Performance",
+      //   },
+      //   {
+      //     key: "/marketing",
+      //     label: "Marketing Funnel Insights",
+      //   },
+      //   {
+      //     key: "/review",
+      //     label: "Review & Customer Satisfaction",
+      //   },
+      // ],
     },
   ];
 

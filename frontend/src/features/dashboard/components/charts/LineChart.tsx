@@ -32,7 +32,7 @@ const LineChart = ({
       const [start, end] = dateRange;
       setLoading(true);
       fetchData(start.format("YYYY-MM-DD"), end.format("YYYY-MM-DD"))
-        .then((res) => setChartData(res))
+        .then((res) => setChartData(res ?? []))
         .finally(() => setLoading(false));
     }
   }, [fetchData, dateRange]);
