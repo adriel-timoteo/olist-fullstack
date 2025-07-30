@@ -15,6 +15,7 @@ type ProductRepoItf interface {
 	SelectDeliveredProductsTrend(context.Context, time.Time, time.Time, constant.Interval) ([]entity.DeliveredProductTrend, error)
 	SelectProductStatusTrend(context.Context, time.Time, time.Time) ([]entity.ProductStatusTrend, error)
 	SelectTopCategories(context.Context, int) ([]entity.ProductCategoryCount, error)
+	SelectOnTimeDeliveryRate(context.Context) (*entity.Rate, error)
 }
 
 type ProductRepoImpl struct {
@@ -144,4 +145,26 @@ func (pr ProductRepoImpl) SelectTopCategories(ctx context.Context, limit int) ([
 	}
 
 	return results, nil
+}
+
+func (pr ProductRepoImpl) SelectOnTimeDeliveryRate(ctx context.Context) (*entity.Rate, error) {
+	tx, ok := ctx.Value(txCtxKey{}).(*sql.Tx)
+	if !ok {
+		return nil, ce.NewError(ce.DatabaseError, "internal server error")
+	}
+
+	q := `
+		SELECT 
+			COUNT(*) FILTER (WHERE order_delivered_customer_date <= order_estimated_delivery_date)::float / COUNT(*) AS on_time_delivery_rate_percent
+		FROM orders
+		WHERE order_delivered_customer_date IS NOT NULL;
+	`
+
+	var rate float64
+	err := tx.QueryRowContext(ctx, q).Scan(&rate)
+	if err != nil {
+		return nil, ce.NewError(ce.DatabaseError, "query execution failed")
+	}
+
+	return &entity.Rate{Rate: rate}, nil
 }

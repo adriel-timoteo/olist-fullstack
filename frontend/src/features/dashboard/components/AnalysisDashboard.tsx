@@ -1,7 +1,7 @@
 import { Col, Row } from "antd";
 import dayjs, { Dayjs } from "dayjs";
 import { totalUniqueCustApi } from "../api/count";
-import { repeatPurchaseRateApi } from "../api/rate";
+import { onTimeDeliveryRateApi, repeatPurchaseRateApi } from "../api/rate";
 import { deliveredTrendApi } from "../api/trend";
 import ChartCard from "./ChartCard";
 import LineChart from "./charts/LineChart";
@@ -34,8 +34,12 @@ const AnalysisDashboard = () => {
       </Col>
       <Col xs={12} md={6}>
         <NumberDisplay
-          title="Total Unique Customer"
-          fetchData={() => totalUniqueCustApi().then((res) => res.data.count)}
+          title="On Time Delivery Rate"
+          fetchData={() =>
+            onTimeDeliveryRateApi().then((res) => res.data.rate * 100)
+          }
+          suffix="%"
+          precision={2}
         />
       </Col>
       <Col xs={12} md={6}>

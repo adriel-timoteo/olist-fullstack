@@ -89,7 +89,7 @@ func (cr CustomerRepoImpl) SelectRepeatPurchaseRate(ctx context.Context) (*entit
 
 	q := `
 		SELECT 
-			100.0 * COUNT(*) FILTER (WHERE order_count > 1) / COUNT(*) AS repeat_purchase_rate_percent
+			COUNT(*) FILTER (WHERE order_count > 1)::float / COUNT(*) AS repeat_purchase_rate_percent
 		FROM (
 			SELECT customer_unique_id, COUNT(o.order_id) AS order_count
 			FROM customers c

@@ -6,3 +6,9 @@ export async function repeatPurchaseRateApi(): Promise<RateResponse> {
     method: "GET",
   });
 }
+
+export async function onTimeDeliveryRateApi(): Promise<RateResponse> {
+  return fetchClient<RateResponse>("/products/delivery/ontime-rate", {
+    method: "GET",
+  });
+}

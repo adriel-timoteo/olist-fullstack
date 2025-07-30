@@ -14,6 +14,7 @@ type ProductUsecaseItf interface {
 	GetDeliveredTrend(context.Context, time.Time, time.Time, constant.Interval) ([]entity.DeliveredProductTrend, error)
 	GetProductStatusTrend(context.Context, time.Time, time.Time) ([]entity.ProductStatusTrend, error)
 	GetTopCategories(context.Context, int) ([]entity.ProductCategoryCount, error)
+	GetOnTimeDeliveryRate(context.Context) (*entity.Rate, error)
 }
 
 type ProductUsecaseImpl struct {
@@ -74,4 +75,20 @@ func (puc ProductUsecaseImpl) GetTopCategories(ctx context.Context, limit int) (
 	}
 
 	return categories, nil
+}
+
+func (puc ProductUsecaseImpl) GetOnTimeDeliveryRate(ctx context.Context) (*entity.Rate, error) {
+	data, err := puc.trx.WithinTransaction(ctx, func(ctx context.Context) (any, error) {
+		return puc.pr.SelectOnTimeDeliveryRate(ctx)
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	rate, ok := data.(*entity.Rate)
+	if !ok {
+		return nil, ce.NewError(ce.InternalError, "error occurred")
+	}
+
+	return rate, nil
 }

@@ -139,3 +139,20 @@ func (ph ProductHandler) GetTopCategories(ctx *gin.Context) {
 	// Return as JSON
 	ctx.JSON(http.StatusOK, dto.SuccessResponse(catDto, "success"))
 }
+
+func (ph ProductHandler) GetOnTimeDeliveryRate(ctx *gin.Context) {
+	// Call usecase
+	rate, err := ph.puc.GetOnTimeDeliveryRate(ctx)
+	if err != nil {
+		ctx.Error(err)
+		return
+	}
+
+	// Map to DTO
+	rateDto := dto.Rate{
+		Rate: rate.Rate,
+	}
+
+	// Return as JSON
+	ctx.JSON(http.StatusOK, dto.SuccessResponse(rateDto, "success"))
+}
