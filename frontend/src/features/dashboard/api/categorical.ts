@@ -16,7 +16,7 @@ export async function topCategoriesApi(
 ): Promise<TopCategoriesResponse> {
   const query = new URLSearchParams({ limit }).toString();
   console.log(query)
-  return fetchClient<TopCategoriesResponse>(`/customer/top-categories?${query}`, {
+  return fetchClient<TopCategoriesResponse>(`/products/top-categories?${query}`, {
     method: "GET",
   });
 }

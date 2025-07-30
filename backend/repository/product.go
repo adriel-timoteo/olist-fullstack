@@ -117,6 +117,7 @@ func (pr ProductRepoImpl) SelectTopCategories(ctx context.Context, limit int) ([
 			p.product_category_name, count(*) AS purchase_count
 		FROM order_items oi
 		JOIN products p ON oi.product_id = p.product_id 
+		WHERE p.product_category_name IS NOT NULL
 		GROUP BY p.product_category_name
 		ORDER BY purchase_count DESC
 		LIMIT $1;
@@ -132,7 +133,7 @@ func (pr ProductRepoImpl) SelectTopCategories(ctx context.Context, limit int) ([
 	for rows.Next() {
 		var record entity.ProductCategoryCount
 		if err := rows.Scan(&record.Category, &record.ProductCount); err != nil {
-			return nil, ce.NewError(ce.DatabaseError, "failed to scan row")
+			return nil, ce.NewError(ce.DatabaseError, err.Error())
 		}
 		results = append(results, record)
 	}
