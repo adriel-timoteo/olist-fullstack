@@ -12,8 +12,9 @@ def load_batch(dataset_name, **kwargs):
     ds = next(d for d in DATASETS if d["name"] == dataset_name)
     transformed_file = kwargs['ti'].xcom_pull(key='transformed_file', task_ids=f"transform_{dataset_name}")
     remaining_file = os.path.join(LOCAL_TMP_DIR, f"remaining_{dataset_name}.csv")
+    done_flag = os.path.join(LOCAL_TMP_DIR, f"done_{dataset_name}.flag")
 
-    if not transformed_file or not os.path.exists(transformed_file):
+    if transformed_file in [None, "SKIPPED"] or not os.path.exists(transformed_file):
         logger.info("No transformed file to load for dataset: %s", dataset_name)
         return
 
@@ -69,7 +70,9 @@ def load_batch(dataset_name, **kwargs):
 
             if remaining_df.empty:
                 os.remove(remaining_file)
-                logger.info("All data loaded. Removed remaining file.")
+                with open(done_flag, 'w') as f:
+                    f.write("done")
+                logger.info("All data loaded. Marked dataset '%s' as done.", dataset_name)
             else:
                 remaining_df.to_csv(remaining_file, index=False)
                 logger.info("Updated remaining file with %d rows left.", len(remaining_df))

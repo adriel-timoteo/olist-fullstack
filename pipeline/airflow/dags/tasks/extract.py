@@ -8,6 +8,12 @@ def extract_batch(dataset_name, **kwargs):
     logger = logging.getLogger(f"extract_{dataset_name}")
     logger.info("Starting extraction for dataset: %s", dataset_name)
 
+    done_flag = os.path.join(LOCAL_TMP_DIR, f"done_{dataset_name}.flag")
+    if os.path.exists(done_flag):
+        logger.info("Dataset '%s' already fully processed. Skipping extraction.", dataset_name)
+        kwargs['ti'].xcom_push(key='batch_file', value='SKIPPED')
+        return
+
     ds = next(d for d in DATASETS if d["name"] == dataset_name)
     remaining_file = os.path.join(LOCAL_TMP_DIR, f"remaining_{dataset_name}.csv")
     batch_file = os.path.join(LOCAL_TMP_DIR, f"batch_{dataset_name}.csv")
@@ -27,7 +33,10 @@ def extract_batch(dataset_name, **kwargs):
 
     if df.empty:
         logger.info("No data left for extraction in dataset: %s", dataset_name)
-        kwargs['ti'].xcom_push(key='batch_file', value=None)
+        # Write a "done" marker file
+        with open(done_flag, 'w') as f:
+            f.write("done")
+        kwargs['ti'].xcom_push(key='batch_file', value='SKIPPED')
         return
 
     batch_df = df.head(BATCH_SIZE)

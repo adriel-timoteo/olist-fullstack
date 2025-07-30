@@ -13,9 +13,9 @@ def filter_valid_foreign_keys(dataset_name, **kwargs):
     ds = next(d for d in DATASETS if d["name"] == dataset_name)
     batch_file = kwargs['ti'].xcom_pull(key='batch_file', task_ids=f"extract_{dataset_name}")
 
-    if not batch_file or not os.path.exists(batch_file):
-        logger.info("No batch file found for transformation: %s", dataset_name)
-        kwargs['ti'].xcom_push(key='transformed_file', value=None)
+    if batch_file in [None, "SKIPPED"] or not os.path.exists(batch_file):
+        logger.info("Skipping FK validation for dataset '%s' due to no batch file.", dataset_name)
+        kwargs['ti'].xcom_push(key='transformed_file', value='SKIPPED')
         return
 
     df = pd.read_csv(batch_file, dtype=str)

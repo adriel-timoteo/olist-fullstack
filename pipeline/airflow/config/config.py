@@ -63,14 +63,14 @@ DATASETS = [
         "pk": ["order_id", "product_id"],
         "fk": {"order_id": "orders", "product_id": "products", "seller_id": "sellers"},
         "columns": [
-            "order_id", "order_item_id", "product_id",
+            "order_id", "order_item_id", "product_id", "seller_id",
             "shipping_limit_date", "price", "freight_value",
         ]
     },
     {
         "name": "order_payments",
         "s3_key": "ecommerce/olist_order_payments_dataset.csv",
-        "table": "order_payments",
+        "table": "payments",
         "pk": ["order_id", "payment_sequential"],
         "fk": {"order_id": "orders"},
         "columns": [
@@ -81,7 +81,7 @@ DATASETS = [
     {
         "name": "order_reviews",
         "s3_key": "ecommerce/olist_order_reviews_dataset.csv",
-        "table": "order_reviews",
+        "table": "reviews",
         "pk": ["review_id"],
         "fk": {"order_id": "orders"},
         "columns": [
