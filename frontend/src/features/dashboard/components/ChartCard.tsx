@@ -1,28 +1,24 @@
 import { Card, Typography } from "antd";
 import { type ReactNode, useState } from "react";
-import dayjs, { Dayjs } from "dayjs";
 
 const { Text } = Typography;
 
-interface ChartCardProps {
+interface ChartCardProps<T> {
   title: string;
-  children: (props: { dateRange: [Dayjs, Dayjs] }) => ReactNode;
-  filters?: (
-    range: [Dayjs, Dayjs],
-    setRange: (range: [Dayjs, Dayjs]) => void
-  ) => ReactNode;
-  defaultRange?: [Dayjs, Dayjs];
+  children: (props: { filters: T }) => ReactNode;
+  filters?: (filters: T, setFilters: (filters: T) => void) => ReactNode;
+  defaultFilters: T;
   height?: number;
 }
 
-const ChartCard = ({
+const ChartCard = <T,>({
   title,
   children,
   filters,
-  defaultRange = [dayjs().subtract(7, "day"), dayjs()],
+  defaultFilters,
   height = 350,
-}: ChartCardProps) => {
-  const [dateRange, setDateRange] = useState<[Dayjs, Dayjs]>(defaultRange);
+}: ChartCardProps<T>) => {
+  const [currentFilters, setCurrentFilters] = useState<T>(defaultFilters);
 
   return (
     <Card style={{ height, display: "flex", flexDirection: "column" }}>
@@ -30,13 +26,12 @@ const ChartCard = ({
         style={{
           display: "flex",
           justifyContent: "space-between",
-          marginBottom: 8,
         }}
       >
         <Text strong>{title}</Text>
-        {filters?.(dateRange, setDateRange)}
+        {filters?.(currentFilters, setCurrentFilters)}
       </div>
-      <div style={{ flex: 1 }}>{children({ dateRange })}</div>
+      <div style={{ flex: 1 }}>{children({ filters: currentFilters })}</div>
     </Card>
   );
 };

@@ -1,5 +1,5 @@
 import { Col, Row } from "antd";
-import dayjs from "dayjs";
+import dayjs, { Dayjs } from "dayjs";
 import { totalUniqueCustApi } from "../api/count";
 import { repeatPurchaseRateApi } from "../api/rate";
 import { deliveredTrendApi } from "../api/trend";
@@ -8,6 +8,9 @@ import LineChart from "./charts/LineChart";
 import NumberDisplay from "./charts/NumberDisplay";
 import DateRangeDropdown from "./filters/DateRangeDropdown";
 import MonthRangeDropdown from "./filters/MonthRangeDropdown";
+import LimitDropdown from "./filters/LimitDropdown";
+import BarChart from "./charts/BarChart";
+import { topCategoriesApi, topCitiesApi } from "../api/categorical";
 
 const AnalysisDashboard = () => {
   return (
@@ -44,13 +47,22 @@ const AnalysisDashboard = () => {
 
       {/* Daily Trend */}
       <Col xs={24} md={12}>
-        <ChartCard
+        <ChartCard<{ dateRange: [Dayjs, Dayjs] }>
           title="Daily Trend of Delivered Products"
-          filters={(range, setRange) => (
-            <DateRangeDropdown value={range} onChange={setRange} />
+          defaultFilters={{
+            dateRange: [
+              dayjs().subtract(7, "day").startOf("day"),
+              dayjs().endOf("day"),
+            ],
+          }}
+          filters={(filters, setFilters) => (
+            <DateRangeDropdown
+              value={filters.dateRange}
+              onChange={(range) => setFilters({ ...filters, dateRange: range })}
+            />
           )}
         >
-          {({ dateRange }) => (
+          {({ filters }) => (
             <LineChart
               key="daily-trend"
               xField="time"
@@ -58,7 +70,7 @@ const AnalysisDashboard = () => {
               fetchData={(start, end) =>
                 deliveredTrendApi("day", start, end).then((res) => res.data)
               }
-              dateRange={dateRange}
+              dateRange={filters.dateRange}
             />
           )}
         </ChartCard>
@@ -66,14 +78,22 @@ const AnalysisDashboard = () => {
 
       {/* Monthly Trend */}
       <Col xs={24} md={12}>
-        <ChartCard
+        <ChartCard<{ dateRange: [Dayjs, Dayjs] }>
           title="Monthly Trend of Delivered Products"
-          defaultRange={[dayjs().subtract(1, "year"), dayjs()]}
-          filters={(range, setRange) => (
-            <MonthRangeDropdown value={range} onChange={setRange} />
+          defaultFilters={{
+            dateRange: [
+              dayjs().subtract(7, "day").startOf("day"),
+              dayjs().endOf("day"),
+            ],
+          }}
+          filters={(filters, setFilters) => (
+            <MonthRangeDropdown
+              value={filters.dateRange}
+              onChange={(range) => setFilters({ ...filters, dateRange: range })}
+            />
           )}
         >
-          {({ dateRange }) => (
+          {({ filters }) => (
             <LineChart
               key="monthly-trend"
               xField="time"
@@ -81,7 +101,55 @@ const AnalysisDashboard = () => {
               fetchData={(start, end) =>
                 deliveredTrendApi("month", start, end).then((res) => res.data)
               }
-              dateRange={dateRange}
+              dateRange={filters.dateRange}
+            />
+          )}
+        </ChartCard>
+      </Col>
+      <Col xs={24} md={12}>
+        <ChartCard
+          title="Top Cities"
+          defaultFilters={{ limit: 10 }}
+          filters={(filters, setFilters) => (
+            <LimitDropdown
+              value={filters.limit}
+              onChange={(limit) => setFilters({ ...filters, limit })}
+            />
+          )}
+        >
+          {({ filters }) => (
+            <BarChart
+              key="top-cities"
+              xField="city"
+              yField="count"
+              limit={filters.limit}
+              fetchData={(limit) =>
+                topCitiesApi(limit.toString()).then((res) => res.data)
+              }
+            />
+          )}
+        </ChartCard>
+      </Col>
+      <Col xs={24} md={12}>
+        <ChartCard
+          title="Top Categories"
+          defaultFilters={{ limit: 10 }}
+          filters={(filters, setFilters) => (
+            <LimitDropdown
+              value={filters.limit}
+              onChange={(limit) => setFilters({ ...filters, limit })}
+            />
+          )}
+        >
+          {({ filters }) => (
+            <BarChart
+              key="top-categories"
+              xField="category"
+              yField="count"
+              limit={filters.limit}
+              fetchData={(limit) =>
+                topCategoriesApi(limit.toString()).then((res) => res.data)
+              }
             />
           )}
         </ChartCard>

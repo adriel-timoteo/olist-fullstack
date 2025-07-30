@@ -21,21 +21,21 @@ const DateRangeDropdown = ({ value, onChange }: DateRangeDropdownProps) => {
   };
 
   const handleSelect = (option: DateRangeOption) => {
-    const end = dayjs();
+    const end = dayjs().endOf("day");
     let start = dayjs();
 
     switch (option) {
       case "7d":
-        start = end.subtract(7, "day");
+        start = end.subtract(7, "day").startOf("day");
         break;
       case "30d":
-        start = end.subtract(30, "day");
+        start = end.subtract(30, "day").startOf("day");
         break;
       case "90d":
-        start = end.subtract(90, "day");
+        start = end.subtract(90, "day").startOf("day");
         break;
       case "1y":
-        start = end.subtract(1, "year");
+        start = end.subtract(1, "year").startOf("day");
         break;
     }
 

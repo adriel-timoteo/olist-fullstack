@@ -7,6 +7,7 @@ export async function deliveredTrendApi(
   end: string,
 ): Promise<DeliveredTrendResponse> {
   const query = new URLSearchParams({ start, end, interval }).toString();
+  console.log(query)
   return fetchClient<DeliveredTrendResponse>(`/products/trends/delivered?${query}`, {
     method: "GET",
   });

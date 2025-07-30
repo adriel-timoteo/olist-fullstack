@@ -31,7 +31,7 @@ const LineChart = ({
     if (fetchData && dateRange) {
       const [start, end] = dateRange;
       setLoading(true);
-      fetchData(start.format("YYYY-MM-DD"), end.format("YYYY-MM-DD"))
+      fetchData(start.toISOString(), end.toISOString())
         .then((res) => setChartData(res ?? []))
         .finally(() => setLoading(false));
     }

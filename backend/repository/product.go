@@ -31,22 +31,21 @@ func (pr ProductRepoImpl) SelectDeliveredProductsTrend(ctx context.Context, star
 		return nil, ce.NewError(ce.DatabaseError, "internal server error")
 	}
 
-	groupByClause := fmt.Sprintf("DATE_TRUNC('%s', o.order_delivered_customer_date)", interval)
+	groupByClause := fmt.Sprintf("DATE_TRUNC('%s', order_delivered_customer_date)", interval)
 	q := fmt.Sprintf(`
     SELECT 
 			%s AS delivery_period,
-			COUNT(oi.order_id) AS total_delivered_products
-    FROM orders o
-    JOIN order_items oi ON o.order_id = oi.order_id
-    WHERE o.order_delivered_customer_date IS NOT NULL
-			AND o.order_delivered_customer_date >= $1
-			AND o.order_delivered_customer_date <= $2
-    GROUP BY delivery_period
-    ORDER BY delivery_period;`, groupByClause)
+			COUNT(order_id) AS total_delivered_orders
+		FROM orders
+		WHERE order_delivered_customer_date IS NOT NULL
+			AND order_delivered_customer_date >= $1
+			AND order_delivered_customer_date <= $2
+		GROUP BY delivery_period
+		ORDER BY delivery_period;`, groupByClause)
 
 	rows, err := tx.QueryContext(ctx, q, start, end)
 	if err != nil {
-		return nil, ce.NewError(ce.DatabaseError, "query execution failed")
+		return nil, ce.NewError(ce.DatabaseError, err.Error())
 	}
 	defer rows.Close()
 

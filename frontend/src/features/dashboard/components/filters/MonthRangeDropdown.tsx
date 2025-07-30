@@ -22,21 +22,21 @@ const MonthRangeDropdown = ({ value, onChange }: MonthRangeDropdownProps) => {
   };
 
   const handleSelect = (option: MonthRangeOption) => {
-    const end = dayjs();
+    const end = dayjs().endOf("day");
     let start = dayjs();
 
     switch (option) {
       case "1y":
-        start = end.subtract(1, "year");
+        start = end.subtract(1, "year").startOf("day");
         break;
       case "2y":
-        start = end.subtract(2, "year");
+        start = end.subtract(2, "year").startOf("day");
         break;
       case "5y":
-        start = end.subtract(5, "year");
+        start = end.subtract(5, "year").startOf("day");
         break;
       case "all-time":
-        start = end.subtract(10, "year");
+        start = end.subtract(10, "year").startOf("day");
         break;
     }
 

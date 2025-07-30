@@ -38,7 +38,9 @@ const NumberDisplay = ({
     }
   }, [fetchData]);
 
-  const formattedValue = displayValue.toFixed(precision);
+  const formattedValue = displayValue.toLocaleString("id-ID", {
+    maximumFractionDigits: precision,
+  });
 
   return (
     <Card
