@@ -114,11 +114,12 @@ func (pr ProductRepoImpl) SelectTopCategories(ctx context.Context, limit int) ([
 
 	q := `
 		SELECT
-			p.product_category_name, count(*) AS purchase_count
+			ct.product_category_name_english, count(*) AS purchase_count
 		FROM order_items oi
-		JOIN products p ON oi.product_id = p.product_id 
+		JOIN products p ON oi.product_id = p.product_id
+		JOIN category_translations ct ON p.product_category_name = ct.product_category_name
 		WHERE p.product_category_name IS NOT NULL
-		GROUP BY p.product_category_name
+		GROUP BY ct.product_category_name_english
 		ORDER BY purchase_count DESC
 		LIMIT $1;
 	`

@@ -4,6 +4,23 @@ CREATE DATABASE olist_db;
 -- Connect to the new database
 \connect olist_db
 
+-- CATEGORIES
+CREATE TABLE category_translations (
+    product_category_id SERIAL PRIMARY KEY,
+    product_category_name TEXT NOT NULL UNIQUE,
+    product_category_name_english TEXT
+);
+
+-- GEOLOCATION
+CREATE TABLE geolocations (
+    geolocation_zip_code_prefix TEXT NOT NULL UNIQUE,
+    geolocation_city TEXT NOT NULL,
+    geolocation_state TEXT NOT NULL,
+    geolocation_lat FLOAT NOT NULL,
+    geolocation_lng FLOAT NOT NULL,
+    geolocation_id SERIAL PRIMARY KEY
+);
+
 -- USERS
 CREATE TABLE users (
     id BIGSERIAL PRIMARY KEY,
@@ -65,7 +82,8 @@ CREATE TABLE products (
     product_weight_g FLOAT,
     product_length_cm FLOAT,
     product_height_cm FLOAT,
-    product_width_cm FLOAT
+    product_width_cm FLOAT,
+    FOREIGN KEY (product_category_name) REFERENCES category_translations(product_category_name)
 );
 
 -- ORDER ITEMS
@@ -106,12 +124,10 @@ CREATE TABLE reviews (
     FOREIGN KEY (order_id) REFERENCES orders(order_id)
 );
 
--- GEOLOCATION
-CREATE TABLE geolocation (
-    geolocation_id SERIAL PRIMARY KEY,
-    geolocation_zip_code_prefix INT NOT NULL,
-    geolocation_city TEXT NOT NULL,
-    geolocation_state TEXT NOT NULL,
-    geolocation_lat FLOAT NOT NULL,
-    geolocation_lng FLOAT NOT NULL
-);
+-- SEED TRANSLATIONS
+\copy category_translations(product_category_name, product_category_name_english) FROM 'D:/Programming/olist-fullstack/db/dataset/ecommerce/product_category_name_translation.csv' DELIMITER ',' CSV HEADER;
+
+INSERT INTO category_translations (product_category_name, product_category_name_english)
+VALUES
+('pc_gamer', 'gaming_pc'),
+('portateis_cozinha_e_preparadores_de_alimentos', 'kitchen_appliances_and_food_processors');

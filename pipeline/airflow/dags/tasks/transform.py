@@ -85,6 +85,9 @@ def transform_order_dates(dataset_name, **kwargs):
         )
         if last_valid_idx is None:
             return row  # no update timestamps at all, skip
+        
+        original_approved = row["order_approved_at"]
+        original_estimated = row["order_estimated_delivery_date"]
 
         last_col = update_cols[last_valid_idx]
         last_original = row[last_col]
@@ -104,9 +107,7 @@ def transform_order_dates(dataset_name, **kwargs):
 
         # Recalculate estimated delivery
         approved = row["order_approved_at"]
-        original_approved = row["order_approved_at"]
-        original_estimated = row["order_estimated_delivery_date"]
-
+        
         if pd.notnull(original_approved) and pd.notnull(original_estimated):
             delta = original_estimated - original_approved
             row["order_estimated_delivery_date"] = approved + delta
