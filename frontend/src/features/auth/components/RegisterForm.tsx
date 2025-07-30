@@ -2,8 +2,9 @@ import { LockOutlined, MailOutlined } from "@ant-design/icons";
 import { Button, Card, Form, Input, Spin, Typography } from "antd";
 import { useRegister } from "../hooks/useRegister"; // Adjust this hook as needed
 import type { AuthRequest } from "../types";
+import { Link } from "react-router";
 
-const { Title } = Typography;
+const { Title, Text } = Typography;
 
 const RegisterForm = () => {
   const { mutate: register, isPending, contextHolder } = useRegister();
@@ -76,6 +77,10 @@ const RegisterForm = () => {
               {isPending ? <Spin /> : "Register"}
             </Button>
           </Form.Item>
+
+          <Text type="secondary" className="text-center block">
+            Already has an account? <Link to="/login">Login here</Link>
+          </Text>
         </Form>
       </Card>
     </>

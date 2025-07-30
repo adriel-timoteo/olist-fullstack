@@ -75,7 +75,10 @@ const DashboardLayout = ({ children }: Props) => {
       key: "3",
       icon: <LogoutOutlined />,
       label: "Logout",
-      onClick: () => console.log("logout"),
+      onClick: () => {
+        localStorage.removeItem("token");
+        navigate("/login");
+      },
     },
   ];
 

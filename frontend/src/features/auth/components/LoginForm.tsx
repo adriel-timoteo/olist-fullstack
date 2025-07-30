@@ -2,8 +2,9 @@ import { LockOutlined, MailOutlined } from "@ant-design/icons";
 import { Button, Card, Form, Input, Spin, Typography } from "antd";
 import { useLogin } from "../hooks/useLogin";
 import type { AuthRequest } from "../types";
+import { Link } from "react-router";
 
-const { Title } = Typography;
+const { Title, Text } = Typography;
 
 const LoginForm = () => {
   const { mutate: login, isPending, contextHolder } = useLogin();
@@ -49,6 +50,10 @@ const LoginForm = () => {
               {isPending ? <Spin /> : "Log In"}
             </Button>
           </Form.Item>
+
+          <Text type="secondary" className="text-center block">
+            Don’t have an account? <Link to="/register">Register here</Link>
+          </Text>
         </Form>
       </Card>
     </>
