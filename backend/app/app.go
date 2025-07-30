@@ -80,8 +80,8 @@ func (a *App) initRoutes() {
 		customers := v1.Group("/customer", middleware.Authenticate())
 		{
 			customers.GET("/top-cities", ch.GetTopCities)
-			// customers.GET("/total", ch.GetTotalUniqueCustomers)
-			// customers.GET("/repeat-rate", ch.GetRepeatPurchaseRate)
+			customers.GET("/total", ch.GetTotalUniqueCustomers)
+			customers.GET("/repeat-rate", ch.GetRepeatPurchaseRate)
 		}
 
 		// FUTURE DEVELOPMENT

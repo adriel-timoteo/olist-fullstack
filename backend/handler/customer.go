@@ -49,3 +49,37 @@ func (ch CustomerHandler) GetTopCities(ctx *gin.Context) {
 	// Return as JSON
 	ctx.JSON(http.StatusOK, dto.SuccessResponse(citiesDto, "success"))
 }
+
+func (ch CustomerHandler) GetTotalUniqueCustomers(ctx *gin.Context) {
+	// Call usecase
+	count, err := ch.cuc.GetTotalUniqueCustomers(ctx)
+	if err != nil {
+		ctx.Error(err)
+		return
+	}
+
+	// Map to DTO
+	countDto := dto.Count{
+		Count: count.Count,
+	}
+
+	// Return as JSON
+	ctx.JSON(http.StatusOK, dto.SuccessResponse(countDto, "success"))
+}
+
+func (ch CustomerHandler) GetRepeatPurchaseRate(ctx *gin.Context) {
+	// Call usecase
+	rate, err := ch.cuc.GetRepeatPurchaseRate(ctx)
+	if err != nil {
+		ctx.Error(err)
+		return
+	}
+
+	// Map to DTO
+	rateDto := dto.Rate{
+		Rate: rate.Rate,
+	}
+
+	// Return as JSON
+	ctx.JSON(http.StatusOK, dto.SuccessResponse(rateDto, "success"))
+}
