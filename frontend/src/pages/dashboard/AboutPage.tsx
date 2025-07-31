@@ -1,7 +1,7 @@
 import { Col, Divider, Row, Typography } from "antd";
 import DashboardLayout from "../../components/DashboardLayout";
 
-const { Title, Paragraph, Text } = Typography;
+const { Title, Paragraph } = Typography;
 
 const AboutPage = () => {
   return (

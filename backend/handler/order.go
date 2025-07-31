@@ -159,3 +159,42 @@ func (oh OrderHandler) GetAverageOrderValue(ctx *gin.Context) {
 	// Return as JSON
 	ctx.JSON(http.StatusOK, dto.SuccessResponse(countDto, "success"))
 }
+
+func (oh OrderHandler) GetAverageDeliveryTime(ctx *gin.Context) {
+	// Call usecase
+	count, err := oh.ouc.GetAverageDeliveryTime(ctx)
+	if err != nil {
+		ctx.Error(err)
+		return
+	}
+
+	// Map to DTO
+	countDto := dto.Count{
+		Count: count.Count,
+	}
+
+	// Return as JSON
+	ctx.JSON(http.StatusOK, dto.SuccessResponse(countDto, "success"))
+}
+
+func (oh OrderHandler) GetOrdersByHour(ctx *gin.Context) {
+
+	// Call usecase
+	statuses, err := oh.ouc.GetOrdersByHour(ctx)
+	if err != nil {
+		ctx.Error(err)
+		return
+	}
+
+	// Map to DTO
+	var ordersDto []dto.OrderByHour
+	for _, s := range statuses {
+		ordersDto = append(ordersDto, dto.OrderByHour{
+			Hour:       s.Hour,
+			OrderCount: s.OrderCount,
+		})
+	}
+
+	// Return as JSON
+	ctx.JSON(http.StatusOK, dto.SuccessResponse(ordersDto, "success"))
+}

@@ -17,7 +17,7 @@ dag = DAG(
     'olist_pipeline',
     default_args=default_args,
     description='Batched ETL with FK constraint handling and incremental cleanup',
-    # schedule='*/5 * * * *',
+    schedule='*/5 * * * *',
     catchup=False
 )
 

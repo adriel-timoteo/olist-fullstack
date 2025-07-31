@@ -6,6 +6,8 @@ import {
   totalUniqueCustApi,
 } from "../api/customer";
 import {
+  averageDeliveryTime,
+  averageOrderByHour,
   averageOrderValue,
   deliveredStatusApi,
   deliveredTrendApi,
@@ -21,6 +23,7 @@ import DateRangeDropdown from "./filters/DateRangeDropdown";
 import LimitDropdown from "./filters/LimitDropdown";
 import MonthRangeDropdown from "./filters/MonthRangeDropdown";
 import StackedColumnChart from "./charts/StackedColumnChart";
+import ColumnChart from "./charts/ColumnChart";
 
 const AnalysisDashboard = () => {
   return (
@@ -65,6 +68,14 @@ const AnalysisDashboard = () => {
           fetchData={() => averageOrderValue().then((res) => res.data.count)}
           prefix="R$"
           precision={2}
+        />
+      </Col>
+      <Col xs={12} sm={6} md={4}>
+        <NumberDisplay
+          title="Average Delivery Time"
+          fetchData={() => averageDeliveryTime().then((res) => res.data.count)}
+          suffix=" day(s)"
+          precision={1}
         />
       </Col>
 
@@ -203,6 +214,18 @@ const AnalysisDashboard = () => {
               }
               dateRange={filters.dateRange}
               colorField={"status"}
+            />
+          )}
+        </ChartCard>
+      </Col>
+      <Col xs={24} md={12}>
+        <ChartCard title="Average Number of Order By Hour" defaultFilters={{}}>
+          {() => (
+            <ColumnChart
+              key="order-by-hour"
+              xField="hour"
+              yField="count"
+              fetchData={() => averageOrderByHour().then((res) => res.data)}
             />
           )}
         </ChartCard>

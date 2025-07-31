@@ -12,3 +12,8 @@ type OrderStatusTrend struct {
 	Status     string
 	OrderCount int
 }
+
+type OrderByHour struct {
+	Hour       int
+	OrderCount float64
+}

@@ -10,3 +10,8 @@ type OrderStatusSnapshot struct {
 	Status string `json:"status"`
 	Count  int    `json:"count"`
 }
+
+type OrderByHour struct {
+	Hour       int     `json:"hour"`
+	OrderCount float64 `json:"count"`
+}

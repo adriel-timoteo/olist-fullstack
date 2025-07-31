@@ -1,5 +1,5 @@
 import { fetchClient } from "../../../api/client";
-import type { CountResponse, DeliveredStatusResponse, DeliveredTrendResponse, RateResponse } from "../types";
+import type { CountResponse, DeliveredStatusResponse, DeliveredTrendResponse, OrderByHourResponse, RateResponse } from "../types";
 
 export async function deliveredTrendApi(
   interval: string,
@@ -7,7 +7,6 @@ export async function deliveredTrendApi(
   end: string,
 ): Promise<DeliveredTrendResponse> {
   const query = new URLSearchParams({ start, end, interval }).toString();
-  console.log(query)
   return fetchClient<DeliveredTrendResponse>(`/order/trends/delivered?${query}`, {
     method: "GET",
   });
@@ -24,7 +23,6 @@ export async function deliveredStatusApi(
   end: string,
 ): Promise<DeliveredStatusResponse> {
   const query = new URLSearchParams({ start, end }).toString();
-  console.log(query)
   return fetchClient<DeliveredStatusResponse>(`/order/trends/status?${query}`, {
     method: "GET",
   });
@@ -38,6 +36,18 @@ export async function totalRevenue(): Promise<CountResponse> {
 
 export async function averageOrderValue(): Promise<CountResponse> {
   return fetchClient<CountResponse>("/order/aov", {
+    method: "GET",
+  });
+}
+
+export async function averageDeliveryTime(): Promise<CountResponse> {
+  return fetchClient<CountResponse>("/order/delivery/speed", {
+    method: "GET",
+  });
+}
+
+export async function averageOrderByHour(): Promise<OrderByHourResponse> {
+  return fetchClient<OrderByHourResponse>("/order/hourly", {
     method: "GET",
   });
 }

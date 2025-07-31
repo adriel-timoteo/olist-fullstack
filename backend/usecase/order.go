@@ -16,6 +16,8 @@ type OrderUsecaseItf interface {
 	GetOnTimeDeliveryRate(context.Context) (*entity.Rate, error)
 	GetTotalRevenue(context.Context) (*entity.Count, error)
 	GetAverageOrderValue(context.Context) (*entity.Count, error)
+	GetAverageDeliveryTime(context.Context) (*entity.Count, error)
+	GetOrdersByHour(context.Context) ([]entity.OrderByHour, error)
 }
 
 type OrderUsecaseImpl struct {
@@ -93,6 +95,7 @@ func (ouc OrderUsecaseImpl) GetTotalRevenue(ctx context.Context) (*entity.Count,
 
 	return count, nil
 }
+
 func (ouc OrderUsecaseImpl) GetAverageOrderValue(ctx context.Context) (*entity.Count, error) {
 	data, err := ouc.trx.WithinTransaction(ctx, func(ctx context.Context) (any, error) {
 		return ouc.or.SelectAverageOrderValue(ctx)
@@ -107,4 +110,36 @@ func (ouc OrderUsecaseImpl) GetAverageOrderValue(ctx context.Context) (*entity.C
 	}
 
 	return count, nil
+}
+
+func (ouc OrderUsecaseImpl) GetAverageDeliveryTime(ctx context.Context) (*entity.Count, error) {
+	data, err := ouc.trx.WithinTransaction(ctx, func(ctx context.Context) (any, error) {
+		return ouc.or.SelectAverageDeliveryTime(ctx)
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	count, ok := data.(*entity.Count)
+	if !ok {
+		return nil, ce.NewError(ce.InternalError, "error occurred")
+	}
+
+	return count, nil
+}
+
+func (ouc OrderUsecaseImpl) GetOrdersByHour(ctx context.Context) ([]entity.OrderByHour, error) {
+	data, err := ouc.trx.WithinTransaction(ctx, func(ctx context.Context) (any, error) {
+		return ouc.or.SelectOrdersByHour(ctx)
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	orders, ok := data.([]entity.OrderByHour)
+	if !ok {
+		return nil, ce.NewError(ce.InternalError, "error occurred")
+	}
+
+	return orders, nil
 }

@@ -17,6 +17,8 @@ type OrderRepoItf interface {
 	SelectOnTimeDeliveryRate(context.Context) (*entity.Rate, error)
 	SelectGrossRevenue(context.Context) (*entity.Count, error)
 	SelectAverageOrderValue(context.Context) (*entity.Count, error)
+	SelectAverageDeliveryTime(context.Context) (*entity.Count, error)
+	SelectOrdersByHour(context.Context) ([]entity.OrderByHour, error)
 }
 
 type OrderRepoImpl struct {
@@ -169,4 +171,66 @@ func (or OrderRepoImpl) SelectAverageOrderValue(ctx context.Context) (*entity.Co
 	}
 
 	return &entity.Count{Count: count}, nil
+}
+
+func (or OrderRepoImpl) SelectAverageDeliveryTime(ctx context.Context) (*entity.Count, error) {
+	tx, ok := ctx.Value(txCtxKey{}).(*sql.Tx)
+	if !ok {
+		return nil, ce.NewError(ce.DatabaseError, "internal server error")
+	}
+
+	q := `
+		SELECT 
+				EXTRACT(EPOCH FROM AVG(order_delivered_customer_date - order_purchase_timestamp)) / 86400 AS avg_delivery_time_in_days
+		FROM 
+				orders
+		WHERE 
+				order_delivered_customer_date IS NOT NULL
+				AND order_purchase_timestamp IS NOT NULL;
+	`
+
+	var count float64
+	err := tx.QueryRowContext(ctx, q).Scan(&count)
+	if err != nil {
+		return nil, ce.NewError(ce.DatabaseError, err.Error())
+	}
+
+	return &entity.Count{Count: count}, nil
+}
+
+func (or OrderRepoImpl) SelectOrdersByHour(ctx context.Context) ([]entity.OrderByHour, error) {
+	tx, ok := ctx.Value(txCtxKey{}).(*sql.Tx)
+	if !ok {
+		return nil, ce.NewError(ce.DatabaseError, "internal server error")
+	}
+
+	q := `
+		SELECT
+			EXTRACT(HOUR FROM order_purchase_timestamp) AS order_hour,
+			ROUND(COUNT(*)::numeric / COUNT(DISTINCT DATE(order_purchase_timestamp)), 2) AS avg_orders_per_hour
+		FROM orders
+		GROUP BY order_hour
+		ORDER BY order_hour;
+	`
+
+	rows, err := tx.QueryContext(ctx, q)
+	if err != nil {
+		return nil, ce.NewError(ce.DatabaseError, "query execution failed")
+	}
+	defer rows.Close()
+
+	var results []entity.OrderByHour
+	for rows.Next() {
+		var record entity.OrderByHour
+		if err := rows.Scan(&record.Hour, &record.OrderCount); err != nil {
+			return nil, ce.NewError(ce.DatabaseError, "failed to scan row")
+		}
+		results = append(results, record)
+	}
+
+	if err = rows.Err(); err != nil {
+		return nil, ce.NewError(ce.DatabaseError, "row iteration error")
+	}
+
+	return results, nil
 }

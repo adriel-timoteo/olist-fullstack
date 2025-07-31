@@ -1,36 +1,52 @@
 import { Column, type ColumnConfig } from "@ant-design/plots";
-import { Card, Typography } from "antd";
-
-const { Text } = Typography;
+import { Spin } from "antd";
+import { useEffect, useState } from "react";
 
 type ColumnChartProps = Partial<ColumnConfig> & {
-  title: string;
-  data: Record<string, unknown>[];
+  data?: Record<string, unknown>[];
   xField: string;
   yField: string;
   height?: number;
+  fetchData?: () => Promise<Record<string, unknown>[]>;
 };
 
 const ColumnChart = ({
-  title,
-  data,
+  data = [],
+  fetchData,
+  height = 300,
   xField,
   yField,
   ...rest
 }: ColumnChartProps) => {
+  const [chartData, setChartData] = useState(data);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (fetchData) {
+      setLoading(true);
+      fetchData()
+        .then((res) => setChartData(res ?? []))
+        .finally(() => setLoading(false));
+    }
+  }, [fetchData]);
+
   const config: ColumnConfig = {
-    data,
+    data: chartData,
     xField,
     yField,
     autoFit: true,
+    height,
     ...rest,
   };
 
-  return (
-    <Card>
-      <Text strong>{title}</Text>
-      <Column {...config} />
-    </Card>
+  console.log(chartData);
+
+  return loading ? (
+    <Spin />
+  ) : chartData.length > 0 ? (
+    <Column {...config} />
+  ) : (
+    <div>No data available</div>
   );
 };
 
