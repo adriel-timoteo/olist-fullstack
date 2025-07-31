@@ -90,9 +90,9 @@ func (a *App) initRoutes() {
 			orders.GET("/trends/delivered", oh.GetDeliveredTrend)
 			orders.GET("/trends/status", oh.GetOrderStatusSnapshot)
 			orders.GET("/delivery/ontime-rate", oh.GetOnTimeDeliveryRate)
-			// orders.GET("/total-revenue", oh.GetTotalRevenue)
+			orders.GET("/total-revenue", oh.GetTotalRevenue)
+			orders.GET("/aov", oh.GetAverageOrderValue)
 			// orders.GET("/total-orders", oh.GetTotalOrders)
-			// orders.GET("/aov", oh.GetAverageOrderValue)
 			// orders.GET("/traffic/daily", oh.GetOrdersPerDay)
 			// orders.GET("/revenue/monthly", oh.GetRevenueByMonth)
 		}

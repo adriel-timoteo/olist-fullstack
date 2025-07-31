@@ -15,6 +15,8 @@ type OrderRepoItf interface {
 	SelectDeliveredOrdersTrend(context.Context, time.Time, time.Time, constant.Interval) ([]entity.DeliveredOrderTrend, error)
 	SelectOrderStatusTrend(context.Context, time.Time, time.Time) ([]entity.OrderStatusTrend, error)
 	SelectOnTimeDeliveryRate(context.Context) (*entity.Rate, error)
+	SelectGrossRevenue(context.Context) (*entity.Count, error)
+	SelectAverageOrderValue(context.Context) (*entity.Count, error)
 }
 
 type OrderRepoImpl struct {
@@ -125,4 +127,46 @@ func (or OrderRepoImpl) SelectOnTimeDeliveryRate(ctx context.Context) (*entity.R
 	}
 
 	return &entity.Rate{Rate: rate}, nil
+}
+
+func (or OrderRepoImpl) SelectGrossRevenue(ctx context.Context) (*entity.Count, error) {
+	tx, ok := ctx.Value(txCtxKey{}).(*sql.Tx)
+	if !ok {
+		return nil, ce.NewError(ce.DatabaseError, "internal server error")
+	}
+
+	q := `
+		SELECT
+			SUM(price) AS total_gross_revenue
+		FROM order_items;
+	`
+
+	var count float64
+	err := tx.QueryRowContext(ctx, q).Scan(&count)
+	if err != nil {
+		return nil, ce.NewError(ce.DatabaseError, "query execution failed")
+	}
+
+	return &entity.Count{Count: count}, nil
+}
+
+func (or OrderRepoImpl) SelectAverageOrderValue(ctx context.Context) (*entity.Count, error) {
+	tx, ok := ctx.Value(txCtxKey{}).(*sql.Tx)
+	if !ok {
+		return nil, ce.NewError(ce.DatabaseError, "internal server error")
+	}
+
+	q := `
+		SELECT
+			SUM(price) / COUNT(DISTINCT order_id) AS average_order_value
+		FROM order_items;
+	`
+
+	var count float64
+	err := tx.QueryRowContext(ctx, q).Scan(&count)
+	if err != nil {
+		return nil, ce.NewError(ce.DatabaseError, "query execution failed")
+	}
+
+	return &entity.Count{Count: count}, nil
 }

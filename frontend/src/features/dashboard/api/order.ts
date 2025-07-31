@@ -1,5 +1,5 @@
 import { fetchClient } from "../../../api/client";
-import type { DeliveredStatusResponse, DeliveredTrendResponse, RateResponse } from "../types";
+import type { CountResponse, DeliveredStatusResponse, DeliveredTrendResponse, RateResponse } from "../types";
 
 export async function deliveredTrendApi(
   interval: string,
@@ -26,6 +26,18 @@ export async function deliveredStatusApi(
   const query = new URLSearchParams({ start, end }).toString();
   console.log(query)
   return fetchClient<DeliveredStatusResponse>(`/order/trends/status?${query}`, {
+    method: "GET",
+  });
+}
+
+export async function totalRevenue(): Promise<CountResponse> {
+  return fetchClient<CountResponse>("/order/total-revenue", {
+    method: "GET",
+  });
+}
+
+export async function averageOrderValue(): Promise<CountResponse> {
+  return fetchClient<CountResponse>("/order/aov", {
     method: "GET",
   });
 }

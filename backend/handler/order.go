@@ -125,3 +125,37 @@ func (oh OrderHandler) GetOnTimeDeliveryRate(ctx *gin.Context) {
 	// Return as JSON
 	ctx.JSON(http.StatusOK, dto.SuccessResponse(rateDto, "success"))
 }
+
+func (oh OrderHandler) GetTotalRevenue(ctx *gin.Context) {
+	// Call usecase
+	count, err := oh.ouc.GetTotalRevenue(ctx)
+	if err != nil {
+		ctx.Error(err)
+		return
+	}
+
+	// Map to DTO
+	countDto := dto.Count{
+		Count: count.Count,
+	}
+
+	// Return as JSON
+	ctx.JSON(http.StatusOK, dto.SuccessResponse(countDto, "success"))
+}
+
+func (oh OrderHandler) GetAverageOrderValue(ctx *gin.Context) {
+	// Call usecase
+	count, err := oh.ouc.GetAverageOrderValue(ctx)
+	if err != nil {
+		ctx.Error(err)
+		return
+	}
+
+	// Map to DTO
+	countDto := dto.Count{
+		Count: count.Count,
+	}
+
+	// Return as JSON
+	ctx.JSON(http.StatusOK, dto.SuccessResponse(countDto, "success"))
+}

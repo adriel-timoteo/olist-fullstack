@@ -1,10 +1,10 @@
 import DashboardLayout from "../../components/DashboardLayout";
+import HomeDashboard from "../../features/dashboard/components/HomeDashboard";
 
 const HomePage = () => {
   return (
     <DashboardLayout>
-      <h1>Welcome to the Home Page!</h1>
-      <p>This is your main dashboard.</p>
+      <HomeDashboard />
     </DashboardLayout>
   );
 };

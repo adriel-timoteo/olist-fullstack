@@ -6,9 +6,11 @@ import {
   totalUniqueCustApi,
 } from "../api/customer";
 import {
+  averageOrderValue,
   deliveredStatusApi,
   deliveredTrendApi,
   onTimeDeliveryRateApi,
+  totalRevenue,
 } from "../api/order";
 import { topCategoriesApi } from "../api/product";
 import ChartCard from "./ChartCard";
@@ -24,13 +26,13 @@ const AnalysisDashboard = () => {
   return (
     <Row gutter={[16, 16]}>
       {/* KPI */}
-      <Col xs={12} md={6}>
+      <Col xs={12} sm={6} md={4}>
         <NumberDisplay
           title="Total Unique Customer"
           fetchData={() => totalUniqueCustApi().then((res) => res.data.count)}
         />
       </Col>
-      <Col xs={12} md={6}>
+      <Col xs={12} sm={6} md={4}>
         <NumberDisplay
           title="Repeat Purchase Rate"
           fetchData={() =>
@@ -40,7 +42,7 @@ const AnalysisDashboard = () => {
           precision={2}
         />
       </Col>
-      <Col xs={12} md={6}>
+      <Col xs={12} sm={6} md={4}>
         <NumberDisplay
           title="On Time Delivery Rate"
           fetchData={() =>
@@ -50,10 +52,19 @@ const AnalysisDashboard = () => {
           precision={2}
         />
       </Col>
-      <Col xs={12} md={6}>
+      <Col xs={12} sm={6} md={4}>
         <NumberDisplay
-          title="Total Unique Customer"
-          fetchData={() => totalUniqueCustApi().then((res) => res.data.count)}
+          title="Total Revenue"
+          fetchData={() => totalRevenue().then((res) => res.data.count)}
+          prefix="R$"
+        />
+      </Col>
+      <Col xs={12} sm={6} md={4}>
+        <NumberDisplay
+          title="Average Order Value"
+          fetchData={() => averageOrderValue().then((res) => res.data.count)}
+          prefix="R$"
+          precision={2}
         />
       </Col>
 

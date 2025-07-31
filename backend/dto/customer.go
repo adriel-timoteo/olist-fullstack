@@ -6,7 +6,7 @@ type CustomerCityCount struct {
 }
 
 type Count struct {
-	Count int `json:"count"`
+	Count float64 `json:"count"`
 }
 
 type Rate struct {

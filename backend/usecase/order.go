@@ -14,6 +14,8 @@ type OrderUsecaseItf interface {
 	GetDeliveredTrend(context.Context, time.Time, time.Time, constant.Interval) ([]entity.DeliveredOrderTrend, error)
 	GetOrderStatusTrend(context.Context, time.Time, time.Time) ([]entity.OrderStatusTrend, error)
 	GetOnTimeDeliveryRate(context.Context) (*entity.Rate, error)
+	GetTotalRevenue(context.Context) (*entity.Count, error)
+	GetAverageOrderValue(context.Context) (*entity.Count, error)
 }
 
 type OrderUsecaseImpl struct {
@@ -28,9 +30,9 @@ func NewOrderUsecaseImpl(or repository.OrderRepoItf, trx repository.Transactor) 
 	}
 }
 
-func (puc OrderUsecaseImpl) GetDeliveredTrend(ctx context.Context, start, end time.Time, interval constant.Interval) ([]entity.DeliveredOrderTrend, error) {
-	data, err := puc.trx.WithinTransaction(ctx, func(ctx context.Context) (any, error) {
-		return puc.or.SelectDeliveredOrdersTrend(ctx, start, end, interval)
+func (ouc OrderUsecaseImpl) GetDeliveredTrend(ctx context.Context, start, end time.Time, interval constant.Interval) ([]entity.DeliveredOrderTrend, error) {
+	data, err := ouc.trx.WithinTransaction(ctx, func(ctx context.Context) (any, error) {
+		return ouc.or.SelectDeliveredOrdersTrend(ctx, start, end, interval)
 	})
 	if err != nil {
 		return nil, err
@@ -44,9 +46,9 @@ func (puc OrderUsecaseImpl) GetDeliveredTrend(ctx context.Context, start, end ti
 	return trends, nil
 }
 
-func (puc OrderUsecaseImpl) GetOrderStatusTrend(ctx context.Context, start, end time.Time) ([]entity.OrderStatusTrend, error) {
-	data, err := puc.trx.WithinTransaction(ctx, func(ctx context.Context) (any, error) {
-		return puc.or.SelectOrderStatusTrend(ctx, start, end)
+func (ouc OrderUsecaseImpl) GetOrderStatusTrend(ctx context.Context, start, end time.Time) ([]entity.OrderStatusTrend, error) {
+	data, err := ouc.trx.WithinTransaction(ctx, func(ctx context.Context) (any, error) {
+		return ouc.or.SelectOrderStatusTrend(ctx, start, end)
 	})
 	if err != nil {
 		return nil, err
@@ -60,9 +62,9 @@ func (puc OrderUsecaseImpl) GetOrderStatusTrend(ctx context.Context, start, end 
 	return statuses, nil
 }
 
-func (puc OrderUsecaseImpl) GetOnTimeDeliveryRate(ctx context.Context) (*entity.Rate, error) {
-	data, err := puc.trx.WithinTransaction(ctx, func(ctx context.Context) (any, error) {
-		return puc.or.SelectOnTimeDeliveryRate(ctx)
+func (ouc OrderUsecaseImpl) GetOnTimeDeliveryRate(ctx context.Context) (*entity.Rate, error) {
+	data, err := ouc.trx.WithinTransaction(ctx, func(ctx context.Context) (any, error) {
+		return ouc.or.SelectOnTimeDeliveryRate(ctx)
 	})
 	if err != nil {
 		return nil, err
@@ -74,4 +76,35 @@ func (puc OrderUsecaseImpl) GetOnTimeDeliveryRate(ctx context.Context) (*entity.
 	}
 
 	return rate, nil
+}
+
+func (ouc OrderUsecaseImpl) GetTotalRevenue(ctx context.Context) (*entity.Count, error) {
+	data, err := ouc.trx.WithinTransaction(ctx, func(ctx context.Context) (any, error) {
+		return ouc.or.SelectGrossRevenue(ctx)
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	count, ok := data.(*entity.Count)
+	if !ok {
+		return nil, ce.NewError(ce.InternalError, "error occurred")
+	}
+
+	return count, nil
+}
+func (ouc OrderUsecaseImpl) GetAverageOrderValue(ctx context.Context) (*entity.Count, error) {
+	data, err := ouc.trx.WithinTransaction(ctx, func(ctx context.Context) (any, error) {
+		return ouc.or.SelectAverageOrderValue(ctx)
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	count, ok := data.(*entity.Count)
+	if !ok {
+		return nil, ce.NewError(ce.InternalError, "error occurred")
+	}
+
+	return count, nil
 }

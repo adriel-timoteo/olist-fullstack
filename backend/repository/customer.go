@@ -72,7 +72,7 @@ func (cr CustomerRepoImpl) SelectTotalUniqueCustomer(ctx context.Context) (*enti
 		FROM customers;
 	`
 
-	var count int
+	var count float64
 	err := tx.QueryRowContext(ctx, q).Scan(&count)
 	if err != nil {
 		return nil, ce.NewError(ce.DatabaseError, "query execution failed")

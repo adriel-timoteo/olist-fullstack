@@ -1,7 +1,7 @@
 package entity
 
 type Count struct {
-	Count int
+	Count float64
 }
 
 type Rate struct {
