@@ -1,8 +1,8 @@
--- CREATE DATABASE
-CREATE DATABASE olist_db;
+-- -- CREATE DATABASE
+-- CREATE DATABASE olist_db;
 
--- Connect to the new database
-\connect olist_db
+-- -- Connect to the new database
+-- \connect olist_db
 
 -- CATEGORIES
 CREATE TABLE category_translations (

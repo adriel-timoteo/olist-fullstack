@@ -11,10 +11,16 @@ def filter_valid_foreign_keys(dataset_name, **kwargs):
     logger.info("Starting FK validation for dataset: %s", dataset_name)
 
     ds = next(d for d in DATASETS if d["name"] == dataset_name)
-    batch_file = kwargs['ti'].xcom_pull(key='batch_file', task_ids=f"extract_{dataset_name}")
+    
+    if "upstream" in ds:
+        extract_task_id = f"extract_{dataset_name}_by_fk"
+    else:
+        extract_task_id = f"extract_{dataset_name}"
 
-    if batch_file in [None, "SKIPPED"] or not os.path.exists(batch_file):
-        logger.info("Skipping FK validation for dataset '%s' due to no batch file.", dataset_name)
+    batch_file = kwargs['ti'].xcom_pull(key='batch_file', task_ids=extract_task_id)
+
+    if batch_file in [None, "SKIPPED"]:
+        logger.info("Skipping FK validation for dataset '%s' due to batch file being %s", dataset_name, batch_file)
         kwargs['ti'].xcom_push(key='transformed_file', value='SKIPPED')
         return
 

@@ -14,6 +14,8 @@ def load_batch(dataset_name, **kwargs):
     remaining_file = os.path.join(LOCAL_TMP_DIR, f"remaining_{dataset_name}.csv")
     done_flag = os.path.join(LOCAL_TMP_DIR, f"done_{dataset_name}.flag")
 
+    ti = kwargs['ti']
+
     if transformed_file in [None, "SKIPPED"] or not os.path.exists(transformed_file):
         logger.info("No transformed file to load for dataset: %s", dataset_name)
         return
@@ -41,11 +43,15 @@ def load_batch(dataset_name, **kwargs):
         df["__pk_tuple__"] = df[pk_cols].astype(str).agg(tuple, axis=1)
         df = df[~df["__pk_tuple__"].isin(existing_keys)].drop(columns=["__pk_tuple__"])
         after_count = len(df)
-
+        inserted_pks = df[pk_cols].astype(str).agg(tuple, axis=1).tolist()
+        
         logger.info("Deduplicated %d rows using primary key(s): %s", before_count - after_count, pk_cols)
+    else:
+        inserted_pks = []
 
     if df.empty:
         os.remove(transformed_file)
+        ti.xcom_push(key='inserted_pks', value=[])
         logger.info("All rows already exist in table '%s'. Nothing to insert.", ds["table"])
         return
 
@@ -56,6 +62,7 @@ def load_batch(dataset_name, **kwargs):
 
     try:
         pg.batch_insert(query, rows)
+        ti.xcom_push(key='inserted_pks', value=inserted_pks)
         logger.info("Inserted %d new rows into table '%s'.", len(rows), ds["table"])
 
         if os.path.exists(remaining_file):
@@ -67,6 +74,8 @@ def load_batch(dataset_name, **kwargs):
                 df["__pk_tuple__"] = df[pk_cols].astype(str).agg(tuple, axis=1)
                 remaining_df = remaining_df[~remaining_df["__pk_tuple__"].isin(df["__pk_tuple__"])]
                 remaining_df = remaining_df.drop(columns=["__pk_tuple__"])
+                
+                
 
             if remaining_df.empty:
                 os.remove(remaining_file)

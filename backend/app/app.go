@@ -60,6 +60,10 @@ func (a *App) initRoutes() {
 	cuc := usecase.NewCustomerUsecaseImpl(cr, trx)
 	ch := handler.NewCustomerHandler(cuc)
 
+	or := repository.NewOrderRepo()
+	ouc := usecase.NewOrderUsecaseImpl(or, trx)
+	oh := handler.NewOrderHandler(ouc)
+
 	a.Router.GET("/ping", func(ctx *gin.Context) {
 		ctx.JSON(http.StatusOK, gin.H{
 			"message": "pong",
@@ -70,12 +74,9 @@ func (a *App) initRoutes() {
 	{
 		v1.POST("/register", uh.RegisterUser)
 		v1.POST("/login", uh.LoginUser)
-		products := v1.Group("/products", middleware.Authenticate())
+		products := v1.Group("/product", middleware.Authenticate())
 		{
 			products.GET("/top-categories", ph.GetTopCategories)
-			products.GET("/trends/delivered", ph.GetDeliveredTrend)
-			products.GET("/trends/status", ph.GetProductStatusSnapshot)
-			products.GET("/delivery/ontime-rate", ph.GetOnTimeDeliveryRate)
 		}
 		customers := v1.Group("/customer", middleware.Authenticate())
 		{
@@ -84,28 +85,24 @@ func (a *App) initRoutes() {
 			customers.GET("/repeat-rate", ch.GetRepeatPurchaseRate)
 		}
 
-		// FUTURE DEVELOPMENT
-		// orders := v1.Group("/orders", middleware.Authenticate())
-		// {
-		// 	orders.GET("/kpi/revenue", oh.GetTotalRevenue)
-		// 	orders.GET("/kpi/aov", oh.GetAverageOrderValue)
-		// 	orders.GET("/traffic/daily", oh.GetOrdersPerDay)
-		// 	orders.GET("/revenue/monthly", oh.GetRevenueByMonth)
-		// }
+		orders := v1.Group("/order", middleware.Authenticate())
+		{
+			orders.GET("/trends/delivered", oh.GetDeliveredTrend)
+			orders.GET("/trends/status", oh.GetOrderStatusSnapshot)
+			orders.GET("/delivery/ontime-rate", oh.GetOnTimeDeliveryRate)
+			// orders.GET("/total-revenue", oh.GetTotalRevenue)
+			// orders.GET("/total-orders", oh.GetTotalOrders)
+			// orders.GET("/aov", oh.GetAverageOrderValue)
+			// orders.GET("/traffic/daily", oh.GetOrdersPerDay)
+			// orders.GET("/revenue/monthly", oh.GetRevenueByMonth)
+		}
 
 		// marketing := v1.Group("/marketing", middleware.Authenticate())
 		// {
 		// 	marketing.GET("/conversion-rate", mh.GetLeadsToCustomerConversionRate)
 		// 	marketing.GET("/revenue-by-channel", mh.GetRevenueByChannel)
 		// }
-
-		// reviews := v1.Group("/reviews", middleware.Authenticate())
-		// {
-		// 	reviews.GET("/average-score", rh.GetAverageReviewScore)
-		// 	reviews.GET("/score-distribution", rh.GetReviewScoreDistribution)
-		// }
 	}
-
 }
 
 func (a *App) Run() {

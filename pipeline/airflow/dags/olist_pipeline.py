@@ -1,7 +1,7 @@
 from airflow import DAG
 from airflow.operators.python import PythonOperator
 from datetime import datetime, timedelta
-from tasks.extract import extract_batch
+from tasks.extract import extract_batch, extract_batch_by_fk
 from tasks.transform import filter_valid_foreign_keys, transform_order_dates
 from tasks.load import load_batch
 from config import DATASETS
@@ -21,54 +21,72 @@ dag = DAG(
     catchup=False
 )
 
-task_map = {}
+task_refs = {}
 
 for ds in DATASETS:
-    extract = PythonOperator(
-        task_id=f"extract_{ds['name']}",
-        python_callable=extract_batch,
-        op_kwargs={'dataset_name': ds['name']},
-        dag=dag,
-    )
+    name = ds["name"]
+    fk_map = ds.get("fk", {})
+    upstream = ds.get("upstream", None)
 
+    if fk_map and upstream:
+        # FK-based extraction
+        extract = PythonOperator(
+            task_id=f"extract_{name}_by_fk",
+            python_callable=extract_batch_by_fk,
+            op_kwargs={
+                "dataset_name": name,
+                "fk_column": list(fk_map.keys())[0],  # Currently only supporting 1 FK field per dataset
+                "upstream_dataset_name": upstream,
+            },
+            dag=dag,
+        )
+    else:
+        # Standard extraction
+        extract = PythonOperator(
+            task_id=f"extract_{name}",
+            python_callable=extract_batch,
+            op_kwargs={"dataset_name": name},
+            dag=dag,
+        )
+
+    # Common transform
     transform = PythonOperator(
-        task_id=f"transform_{ds['name']}",
+        task_id=f"transform_{name}",
         python_callable=filter_valid_foreign_keys,
-        op_kwargs={'dataset_name': ds['name']},
+        op_kwargs={"dataset_name": name},
         dag=dag,
     )
 
-    if ds["name"] == "orders":
+    # Load
+    load = PythonOperator(
+        task_id=f"load_{name}",
+        python_callable=load_batch,
+        op_kwargs={"dataset_name": name},
+        dag=dag,
+    )
+
+    # Orders gets special treatment (extra transform)
+    if name == "orders":
         date_transform = PythonOperator(
             task_id="transform_order_dates",
             python_callable=transform_order_dates,
-            op_kwargs={'dataset_name': ds['name']},
+            op_kwargs={"dataset_name": name},
             dag=dag,
         )
-
-        load = PythonOperator(
-            task_id=f"load_{ds['name']}",
-            python_callable=load_batch,
-            op_kwargs={'dataset_name': ds['name']},
-            dag=dag,
-        )
-
         extract >> transform >> date_transform >> load
     else:
-        load = PythonOperator(
-            task_id=f"load_{ds['name']}",
-            python_callable=load_batch,
-            op_kwargs={'dataset_name': ds['name']},
-            dag=dag,
-        )
-
         extract >> transform >> load
 
-    task_map[ds['name']] = load
+    task_refs[name] = {
+        "extract": extract,
+        "load": load,
+    }
 
-# Add FK dependencies
+# Set FK-based extract dependencies to run *after* upstream LOAD
 for ds in DATASETS:
     if "fk" in ds:
-        for parent_table in ds["fk"].values():
-            if parent_table in task_map:
-                task_map[parent_table] >> task_map[ds['name']]
+        for fk_field, parent_table in ds["fk"].items():
+            upstream_load = task_refs.get(parent_table, {}).get("load")
+            current_extract = task_refs[ds["name"]]["extract"]
+            if upstream_load and current_extract:
+                upstream_load >> current_extract

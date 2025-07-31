@@ -1,16 +1,24 @@
 import { Col, Row } from "antd";
 import dayjs, { Dayjs } from "dayjs";
-import { totalUniqueCustApi } from "../api/count";
-import { onTimeDeliveryRateApi, repeatPurchaseRateApi } from "../api/rate";
-import { deliveredTrendApi } from "../api/trend";
+import {
+  repeatPurchaseRateApi,
+  topCitiesApi,
+  totalUniqueCustApi,
+} from "../api/customer";
+import {
+  deliveredStatusApi,
+  deliveredTrendApi,
+  onTimeDeliveryRateApi,
+} from "../api/order";
+import { topCategoriesApi } from "../api/product";
 import ChartCard from "./ChartCard";
+import BarChart from "./charts/BarChart";
 import LineChart from "./charts/LineChart";
 import NumberDisplay from "./charts/NumberDisplay";
 import DateRangeDropdown from "./filters/DateRangeDropdown";
-import MonthRangeDropdown from "./filters/MonthRangeDropdown";
 import LimitDropdown from "./filters/LimitDropdown";
-import BarChart from "./charts/BarChart";
-import { topCategoriesApi, topCitiesApi } from "../api/categorical";
+import MonthRangeDropdown from "./filters/MonthRangeDropdown";
+import StackedColumnChart from "./charts/StackedColumnChart";
 
 const AnalysisDashboard = () => {
   return (
@@ -154,6 +162,36 @@ const AnalysisDashboard = () => {
               fetchData={(limit) =>
                 topCategoriesApi(limit.toString()).then((res) => res.data)
               }
+            />
+          )}
+        </ChartCard>
+      </Col>
+      <Col xs={24} md={12}>
+        <ChartCard<{ dateRange: [Dayjs, Dayjs] }>
+          title="Daily Status of Purchased Products"
+          defaultFilters={{
+            dateRange: [
+              dayjs().subtract(7, "day").startOf("day"),
+              dayjs().endOf("day"),
+            ],
+          }}
+          filters={(filters, setFilters) => (
+            <DateRangeDropdown
+              value={filters.dateRange}
+              onChange={(range) => setFilters({ ...filters, dateRange: range })}
+            />
+          )}
+        >
+          {({ filters }) => (
+            <StackedColumnChart
+              key="purchased-status"
+              xField="time"
+              yField="count"
+              fetchData={(start, end) =>
+                deliveredStatusApi(start, end).then((res) => res.data)
+              }
+              dateRange={filters.dateRange}
+              colorField={"status"}
             />
           )}
         </ChartCard>

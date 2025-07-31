@@ -58,6 +58,7 @@ DATASETS = [
     },
     {
         "name": "order_items",
+        "upstream": "orders",
         "s3_key": "ecommerce/olist_order_items_dataset.csv",
         "table": "order_items",
         "pk": ["order_id", "product_id"],
@@ -69,6 +70,7 @@ DATASETS = [
     },
     {
         "name": "order_payments",
+        "upstream": "orders",
         "s3_key": "ecommerce/olist_order_payments_dataset.csv",
         "table": "payments",
         "pk": ["order_id", "payment_sequential"],
@@ -80,6 +82,7 @@ DATASETS = [
     },
     {
         "name": "order_reviews",
+        "upstream": "orders",
         "s3_key": "ecommerce/olist_order_reviews_dataset.csv",
         "table": "reviews",
         "pk": ["review_id"],
